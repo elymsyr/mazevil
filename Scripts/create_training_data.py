@@ -27,8 +27,6 @@ for file in labeled_files:
     if os.path.exists(image_file_path):
         shutil.copy(image_file_path, data_folder)
 
-png_to_csv('Data')
-
 print("Files have been copied successfully.")
 
 

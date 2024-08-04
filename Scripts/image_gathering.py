@@ -39,5 +39,8 @@ for file in labeled_files:
     
     # Write the updated XML file back to the Data folder
     tree.write(data_labeled_file_path)
+    
+from xml_to_csc import png_to_csv
+png_to_csv('Data')
 
 print("Files have been copied and XML paths updated successfully.")
