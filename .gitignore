@@ -1,4 +1,11 @@
 # Byte-compiled / optimized / DLL files
+Images/
+'Labeled Images'/
+LabelImg/
+Mazevil/
+'Processed Images'/
+
+
 __pycache__/
 *.py[cod]
 *$py.class
