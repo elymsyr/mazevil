@@ -1,9 +1,9 @@
 # Byte-compiled / optimized / DLL files
 Images/
-'Labeled Images'/
+Labeled Images/
 LabelImg/
 Mazevil/
-'Processed Images'/
+Processed Images/
 
 
 __pycache__/
