@@ -1,0 +1,26 @@
+<annotation>
+	<folder>Images</folder>
+	<filename>screenshot_163.png</filename>
+	<path>C:\Users\orhun\OneDrive\Belgeler\GitHub\gaming-with-eye-n-rl\Images\screenshot_163.png</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>800</width>
+		<height>450</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>next_screen</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>12</xmin>
+			<ymin>12</ymin>
+			<xmax>782</xmax>
+			<ymax>437</ymax>
+		</bndbox>
+	</object>
+</annotation>
