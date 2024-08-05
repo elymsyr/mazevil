@@ -1,7 +1,7 @@
 window_title = 'Mazevil'
 model_path = 'Model\\custom_model_lite\\detect.tflite'
 lblpath = 'Model\\custom_model_lite\\labelmap.txt'
-min_conf = 0.3
+min_conf = 0.4
 
 import pygetwindow as gw
 from PIL import ImageGrab
