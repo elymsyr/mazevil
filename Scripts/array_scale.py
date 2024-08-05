@@ -44,3 +44,34 @@ def downscale_binary_array(big_array, block_size):
 # block_size = 3  # Block size of 3x3 to get a 3x3 small array from a 9x9 big array
 # small_array = downscale_binary_array(big_array, block_size)
 # print(small_array)
+
+
+import numpy as np
+
+def upscale_binary_array(array, alpha):
+    # Check if alpha is an integer
+    if not isinstance(alpha, int) or alpha <= 0:
+        raise ValueError("Alpha must be a positive integer.")
+    
+    # Get the shape of the original array
+    old_shape = array.shape
+    
+    # Compute the new shape
+    new_shape = (old_shape[0] * alpha, old_shape[1] * alpha)
+    
+    # Create an empty array with the new shape
+    upscaled_array = np.zeros(new_shape, dtype=array.dtype)
+    
+    # Fill the upscaled array
+    for i in range(old_shape[0]):
+        for j in range(old_shape[1]):
+            upscaled_array[i*alpha:(i+1)*alpha, j*alpha:(j+1)*alpha] = array[i, j]
+    
+    return upscaled_array
+
+# # Example usage
+# binary_array = np.array([[0, 1], [1, 0]])
+# alpha = 3
+# upscaled_array = upscale_binary_array(binary_array, alpha)
+
+# print(upscaled_array)

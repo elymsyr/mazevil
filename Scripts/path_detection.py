@@ -4,7 +4,7 @@ image_path = 'Scripts\\test_image.png'
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from array_downscale import downscale_binary_array
+from array_scale import downscale_binary_array
 
 # Load the image
 image = cv2.imread(image_path)

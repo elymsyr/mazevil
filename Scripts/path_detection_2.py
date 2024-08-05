@@ -1,9 +1,9 @@
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-from array_downscale import downscale_binary_array
+from array_scale import downscale_binary_array
 
-
+color_palette = [(184, 111, 80),(116, 63, 57),(89, 51, 53),(228, 166, 114)]
 # Load the image
 image_path = 'Scripts\\test_image.png'
 image = cv2.imread(image_path)
@@ -13,9 +13,11 @@ image = cv2.imread(image_path)
 # Convert the image from BGR to RGB
 rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
+cv2.imshow('E', rgb)
+
 # Define the RGB range
-  # Example lower bound in RGB
-  # Example upper bound in RGB
+lower_bound = np.array([100, 50, 50])  # Example lower bound in RGB
+upper_bound = np.array([255, 150, 150])  # Example upper bound in RGB
 
 # Create the mask
 mask = cv2.inRange(rgb, lower_bound, upper_bound)
