@@ -68,7 +68,7 @@ Activate environment:
 
 Installation is taken from [https://www.youtube.com/watch?v=rRwflsS67ow&t=780s](https://www.youtube.com/watch?v=rRwflsS67ow&t=780s)
 
-#### __python_out=.
+#### Protoc
 
 Open Command Prompt with the path /path/TF2/models/research.
 Create a .py file with the following code and the name ***use_protobuf.py***:
@@ -89,7 +89,7 @@ Run script from Command Prompt:
 ```
 Expect no ouput and no errors.
 
-#### Setup file
+#### Setup
 
 Copy the setup.py file from **/path/TF2/models/research/object_detection/packages/tf2/** to **/path/TF2/models/research/**
 Open Command Prompt with the path /path/TF2/models/research and type:
