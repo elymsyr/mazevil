@@ -2,12 +2,8 @@ import cv2
 import numpy as np
 import pygetwindow as gw
 from PIL import ImageGrab
-import numpy as np
-from typing import Callable , Optional
-import cv2
 from model import model, model_detection
 from path import path_detection
-from time import sleep
 
 def capture_window(window: gw.Win32Window, top_crop=0, bottom_crop=1):
     avg = 8
@@ -33,7 +29,6 @@ def window(model_path: str, lblpath: str, show: bool = True, scale_order: list =
     # np.set_printoptions(precision=6, suppress=True)
 
     while True:
-        sleep(3)
         window_image = capture_window(window, top_crop=20, bottom_crop=50)
 
         boxes, classes, scores, environment = model_detection(image=window_image, inter_values=inter_values, min_conf=min_conf)
@@ -47,9 +42,6 @@ def window(model_path: str, lblpath: str, show: bool = True, scale_order: list =
         if show:
             for i in range(len(scores)):
                 if ((scores[i] > min_conf) and (scores[i] <= 1.0)):
-
-                    # Get bounding box coordinates and draw box
-                    # Interpreter can return coordinates that are outside of image dimensions, need to force them to be within image using max() and min()
                     ymin = int(max(1,(boxes[i][0] * imH)))
                     xmin = int(max(1,(boxes[i][1] * imW)))
                     ymax = int(min(imH,(boxes[i][2] * imH)))
@@ -57,7 +49,6 @@ def window(model_path: str, lblpath: str, show: bool = True, scale_order: list =
 
                     cv2.rectangle(window_image, (xmin,ymin), (xmax,ymax), (10, 255, 0), 2)
 
-                    # Draw label
                     object_name = inter_values['labels'][int(classes[i])] # Look up object name from "labels" array using class index
                     label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
                     labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
