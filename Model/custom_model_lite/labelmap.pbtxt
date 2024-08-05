@@ -1,0 +1,380 @@
+item {
+  id: 1
+  name: 'player'
+}
+
+item {
+  id: 2
+  name: 'enemy_slug'
+}
+
+item {
+  id: 3
+  name: 'enemy_slug_big'
+}
+
+item {
+  id: 4
+  name: 'trap_off'
+}
+
+item {
+  id: 5
+  name: 'aim'
+}
+
+item {
+  id: 6
+  name: 'enemy_skeleton'
+}
+
+item {
+  id: 7
+  name: 'enemy_skeleton_shoot'
+}
+
+item {
+  id: 8
+  name: 'health'
+}
+
+item {
+  id: 9
+  name: 'health-1'
+}
+
+item {
+  id: 10
+  name: 'health-2'
+}
+
+item {
+  id: 11
+  name: 'health-3'
+}
+
+item {
+  id: 12
+  name: 'health-4'
+}
+
+item {
+  id: 13
+  name: 'health-5'
+}
+
+item {
+  id: 14
+  name: 'health-6'
+}
+
+item {
+  id: 15
+  name: 'next_screen'
+}
+
+item {
+  id: 16
+  name: 'next_screen_stop'
+}
+
+item {
+  id: 17
+  name: 'door'
+}
+
+item {
+  id: 18
+  name: 'trap_warning'
+}
+
+item {
+  id: 19
+  name: 'trap_on'
+}
+
+item {
+  id: 20
+  name: 'trap_door'
+}
+
+item {
+  id: 21
+  name: 'shoot'
+}
+
+item {
+  id: 22
+  name: 'shield'
+}
+
+item {
+  id: 23
+  name: 'gold'
+}
+
+item {
+  id: 24
+  name: 'treasury_open'
+}
+
+item {
+  id: 25
+  name: 'treasury_close'
+}
+
+item {
+  id: 26
+  name: 'treasury_monster'
+}
+
+item {
+  id: 27
+  name: 'treasury_monster_hit'
+}
+
+item {
+  id: 28
+  name: 'key'
+}
+
+item {
+  id: 29
+  name: 'play'
+}
+
+item {
+  id: 30
+  name: 'game_over'
+}
+
+item {
+  id: 31
+  name: 'start_screen'
+}
+
+item {
+  id: 32
+  name: 'start_screen_play'
+}
+
+item {
+  id: 33
+  name: 'start_screen_new_run'
+}
+
+item {
+  id: 34
+  name: 'player'
+}
+
+item {
+  id: 35
+  name: 'enemy_slug'
+}
+
+item {
+  id: 36
+  name: 'enemy_slug_hit'
+}
+
+item {
+  id: 37
+  name: 'enemy_slug_big'
+}
+
+item {
+  id: 38
+  name: 'enemy_slug_big_hit'
+}
+
+item {
+  id: 39
+  name: 'trap_off'
+}
+
+item {
+  id: 40
+  name: 'aim'
+}
+
+item {
+  id: 41
+  name: 'enemy_skeleton'
+}
+
+item {
+  id: 42
+  name: 'enemy_skeleton_hit'
+}
+
+item {
+  id: 43
+  name: 'enemy_skeleton_shoot'
+}
+
+item {
+  id: 44
+  name: 'health'
+}
+
+item {
+  id: 45
+  name: 'health-1'
+}
+
+item {
+  id: 46
+  name: 'health-2'
+}
+
+item {
+  id: 47
+  name: 'health-3'
+}
+
+item {
+  id: 48
+  name: 'health-4'
+}
+
+item {
+  id: 49
+  name: 'health-5'
+}
+
+item {
+  id: 50
+  name: 'health-6'
+}
+
+item {
+  id: 51
+  name: 'timer'
+}
+
+item {
+  id: 52
+  name: 'gold_counter'
+}
+
+item {
+  id: 53
+  name: 'bomb_counter_0'
+}
+
+item {
+  id: 54
+  name: 'next_screen'
+}
+
+item {
+  id: 55
+  name: 'next_screen_stop'
+}
+
+item {
+  id: 56
+  name: 'player_hit'
+}
+
+item {
+  id: 57
+  name: 'door'
+}
+
+item {
+  id: 58
+  name: 'trap_warning'
+}
+
+item {
+  id: 59
+  name: 'trap_on'
+}
+
+item {
+  id: 60
+  name: 'trap_door'
+}
+
+item {
+  id: 61
+  name: 'shoot'
+}
+
+item {
+  id: 62
+  name: 'shield'
+}
+
+item {
+  id: 63
+  name: 'gold'
+}
+
+item {
+  id: 64
+  name: 'pot'
+}
+
+item {
+  id: 65
+  name: 'reward_half_health'
+}
+
+item {
+  id: 66
+  name: 'health_reward'
+}
+
+item {
+  id: 67
+  name: 'treasury_open'
+}
+
+item {
+  id: 68
+  name: 'treasury_close'
+}
+
+item {
+  id: 69
+  name: 'treasury_monster'
+}
+
+item {
+  id: 70
+  name: 'treasury_monster_hit'
+}
+
+item {
+  id: 71
+  name: 'key'
+}
+
+item {
+  id: 72
+  name: 'play'
+}
+
+item {
+  id: 73
+  name: 'game_over'
+}
+
+item {
+  id: 74
+  name: 'start_screen'
+}
+
+item {
+  id: 75
+  name: 'start_screen_play'
+}
+
+item {
+  id: 76
+  name: 'start_screen_new_run'
+}
+

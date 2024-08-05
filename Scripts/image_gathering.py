@@ -13,14 +13,14 @@ def zip_folder(folder_path, output_path):
 # Define the folder paths
 
 
-def gather_data(images_folder: str = "Images", labeled_images_folder: str = "Labeled Images", data_folder: str = "Data", folder_to_zip: str = 'Data', output_zip_path: str = 'Data', create_csv: bool = False):
+def gather_data(images_folder: str = "Processed Images", labeled_images_folder: str = "Labeled Images", data_folder: str = "Data/all", folder_to_zip: str = 'Data', output_zip_path: str = 'Data', create_csv: bool = False):
     # Create the Data folder if it doesn't exist
     if not os.path.exists(data_folder):
         os.makedirs(data_folder)
 
     # Get the list of files in the Labeled Images folder
     labeled_files = os.listdir(labeled_images_folder)
-
+    print(len(labeled_files))
     for file in labeled_files:
         # Construct the full file paths
         labeled_file_path = os.path.join(labeled_images_folder, file)
@@ -51,10 +51,10 @@ def gather_data(images_folder: str = "Images", labeled_images_folder: str = "Lab
         
     if create_csv: png_to_csv('Data')
 
-    # Ensure the folder exists
-    if os.path.isdir(folder_to_zip):
-        zip_folder(folder_to_zip, output_zip_path)
-    else:
-        print(f'The folder "{folder_to_zip}" does not exist.')
+    # # Ensure the folder exists
+    # if os.path.isdir(folder_to_zip):
+    #     zip_folder(folder_to_zip, output_zip_path)
+    # else:
+    #     print(f'The folder "{folder_to_zip}" does not exist.')
 
 gather_data()
