@@ -1,10 +1,7 @@
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import pygetwindow as gw
 from PIL import ImageGrab
-import numpy as np
-import cv2
 from array_scale import downscale_binary_array, upscale_binary_array
 
 window_title = 'Mazevil'

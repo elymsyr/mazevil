@@ -32,16 +32,19 @@ def list_png_files_with_full_path(folder_path):
 
 ### Define function for inferencing with TFLite model and displaying results
 
-def tflite_detection(image, labels, interpreter: Interpreter, input_details, output_details, float_input, width, height, input_mean = 127.5, input_std = 127.5):
+def tflite_detection(image, interpreter: Interpreter, inter_values: dict, input_mean = 127.5, input_std = 127.5):
+    # Get input and output tensors
+    output_details = inter_values['output_details']
+   
     # imH, imW, _ = image.shape
-    image_resized = cv2.resize(image, (width, height))
+    image_resized = cv2.resize(image, (inter_values['width'], inter_values['height']))
     input_data = np.expand_dims(image_resized, axis=0)    
 
     # Normalize pixel values if using a floating model (i.e. if model is non-quantized)
-    if float_input:
+    if inter_values['float_input']:
         input_data = (np.float32(input_data) - input_mean) / input_std    
 
-    interpreter.set_tensor(input_details[0]['index'],input_data)
+    interpreter.set_tensor(inter_values['input_details'][0]['index'],input_data)
     interpreter.invoke()
         
     # Retrieve detection results
