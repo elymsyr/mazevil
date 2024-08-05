@@ -33,8 +33,8 @@ windows = gw.getWindowsWithTitle(window_title)
 
 window = windows[0]
 
-for item in windows:
-    if item.title == 'Mazevil': window = item
+# for item in windows:
+#     if item.title == 'Mazevil': window = item
 
 while True:
     window_image = capture_window(window)

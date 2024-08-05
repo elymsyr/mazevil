@@ -25,8 +25,8 @@ def window(model_path: str, lblpath: str, show: bool = True, scale_order: list =
         window_image = capture_window(window, top_crop=20, bottom_crop=50)
         imH, imW, _ = window_image.shape
 
-        for item in windows:
-            if item.title == full_title: window = item
+        # for item in windows:
+        #     if item.title == full_title: window = item
 
         # np.set_printoptions(precision=6, suppress=True)
 
