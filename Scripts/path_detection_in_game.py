@@ -6,9 +6,10 @@ from PIL import ImageGrab
 import numpy as np
 from time import sleep
 import cv2
-from Scripts.array_scale import downscale_binary_array
+from array_scale import downscale_binary_array, upscale_binary_array
 
 window_title = 'Mazevil'
+scale_order = [3, 3, 3]
 
 def path_detection(rgb, downscale_order = [3,3,3], lower_bound = np.array([100, 50, 50]), upper_bound = np.array([255, 150, 150])):
     mask = cv2.inRange(rgb, lower_bound, upper_bound)
@@ -37,7 +38,10 @@ for item in windows:
 
 while True:
     window_image = capture_window(window)
-    binary_array = path_detection(rgb=window_image, downscale_order=[3,3,3])
+    binary_array = path_detection(rgb=window_image, downscale_order=scale_order)
+
+    for scale in scale_order:
+        binary_array = upscale_binary_array(binary_array, scale)
 
     cv2.imshow('paths', (binary_array * 255).astype(np.uint8))
 
