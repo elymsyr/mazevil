@@ -2,8 +2,6 @@
  
 ## Installation (for Windows and TF GPU)
 
-Installation is taken from [https://www.youtube.com/watch?v=rRwflsS67ow&t=780s](https://www.youtube.com/watch?v=rRwflsS67ow&t=780s)
-
 ### 1. Tensorflow Models Repository
 
 Download [Tensorflow Models Repo](https://github.com/tensorflow/models.git) to a file you have created. Let's say the file is path/TF2.
@@ -67,6 +65,8 @@ Activate environment:
 ```
 
 ### 6. Install TF-Lite API
+
+Installation is taken from [https://www.youtube.com/watch?v=rRwflsS67ow&t=780s](https://www.youtube.com/watch?v=rRwflsS67ow&t=780s)
 
 #### __python_out=.
 
