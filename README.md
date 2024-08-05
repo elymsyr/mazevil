@@ -8,23 +8,25 @@ The aim is to detect the path and the object on the game screen and train a mode
 
 ### Custom Object Detection Test Model
 
-The data is taken using [LabelImg](https://github.com/HumanSignal/labelImg).
-A [test model](Model\test_model_001) is trained with 183 images.
-
 Trained script is taken from [colab](https://colab.research.google.com/github/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Train_TFLite2_Object_Detction_Model.ipynb). See [here](https://www.youtube.com/watch?v=XZ7FYAMCc4M&t=311s) for the Youtube Video.
 
-#### Examples of [Test Model 001]((Model\test_model_001)) 
+The data is taken using [LabelImg](https://github.com/HumanSignal/labelImg).
+A [test model](Model\test_model_001) is trained with 183 images. Images and xml files can be found at [**Data**](Data).
+
+**Examples of [Test Model 001]((Model\test_model_001)) with a score threshold of 0.4:**
 
 <p align="center">
-  <img src="https://via.placeholder.com/150" alt="Image 1" width="200"/>
-  <img src="https://via.placeholder.com/150" alt="Image 2" width="200"/>
+  <img src="Docs\object_2.png" alt="object_2" width="400"/>
+  <img src="Docs\object_0 .png" alt="object_0" width="400"/>
 </p>
 
 ## Path Detection System
 
+**Examples of Path Detection:**
+
 <p align="center">
-  <img src="https://via.placeholder.com/150" alt="Image 1" width="200"/>
-  <img src="https://via.placeholder.com/150" alt="Image 2" width="200"/>
+  <img src="Docs\path_0 .png" alt="path_0" width="400"/>
+  <img src="Docs\path_1.png" alt="path_1" width="400"/>
 </p>
 
 ## Installation (for Windows and TF GPU)
