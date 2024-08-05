@@ -4,6 +4,24 @@ A free demo version for **Mazevil** game can be found at [Itch.io](https://splix
 This project is focused on custom object detection using Tensorflow API and path detection with OpenCV.
 The aim is to detect the path and the object on the game screen and train a model using Reinforcement Learning algorithms.
 
+## Table of Contents
+- [Path and Object Detection](#path-and-object-detection)
+  - [Custom Object Detection Test Model](#custom-object-detection-test-model)
+- [Path Detection System](#path-detection-system)
+- [Installation (for Windows and TF GPU)](#installation-for-windows-and-tf-gpu)
+  - [1. Tensorflow Models Repository](#1-tensorflow-models-repository)
+  - [2. Protobuf Repository](#2-protobuf-repository)
+  - [3. Cuda Toolkit and cuDNN](#3-cuda-toolkit-and-cudnn)
+    - [3.1 Cuda Installation](#31-cuda-installation)
+    - [3.2 cuDNN Installation](#32-cudnn-installation)
+    - [3.3 Update Environment Variables](#33-update-environment-variables)
+  - [4. Anaconda Environment](#4-anaconda-environment)
+  - [5. Install Dependencies](#5-install-dependencies)
+  - [6. Install TF-Lite API](#6-install-tf-lite-api)
+    - [Protoc](#protoc)
+    - [Setup](#setup)
+    - [Test Installation](#test-installation)
+
 ## Path and Object Detection
 
 ### Custom Object Detection Test Model
