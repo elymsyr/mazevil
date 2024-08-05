@@ -29,7 +29,7 @@ def take_screenshot_of_window(window_title, folder_path, duration=None, number_o
     if not window:
         print(f"No window found with title '{window_title}'")
         return
-    window = window[1]
+    window = window[0]
     
     last_number = get_last_screenshot_number(folder_path)
     avg = 6

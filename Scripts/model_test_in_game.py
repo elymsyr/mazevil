@@ -1,6 +1,6 @@
 window_title = 'Mazevil'
-model_path = 'Model\\custom_model_lite\\detect.tflite'
-lblpath = 'Model\\custom_model_lite\\labelmap.txt'
+model_path = 'Model\\test_model_001\\detect.tflite'
+lblpath = 'Model\\test_model_001\\labelmap.txt'
 min_conf = 0.4
 
 import pygetwindow as gw
@@ -69,7 +69,7 @@ while True:
 
             detections.append([object_name, scores[i], xmin, ymin, xmax, ymax])
     
-    cv2.imshow("Processed Input Data", window_image)
+    cv2.imshow("Objects in Game", window_image)
 
 
     
