@@ -21,8 +21,17 @@ def model(model_path: str, lblpath: str):
 
     return {'labels': labels, 'interpreter': interpreter, 'input_details': input_details, 'output_details': output_details, 'height': height, 'width': width, 'float_input': float_input}
 
+def find_center_coordinates(boxes, scores, classes, min_conf):
+    centers = []
+    for index, box in enumerate(boxes):
+        ymin, xmin, ymax, xmax = box
+        center_x = (xmin + xmax) / 2
+        center_y = (ymin + ymax) / 2
+        if scores[index] > min_conf: centers.append([center_x, center_y, classes[index ]])
+    centers_array = np.array(centers)  # First, create a numpy array
+    return np.ndarray(centers_array.shape, buffer=centers_array.data)
 
-def model_detection(image, inter_values: dict, input_mean = 127.5, input_std = 127.5):
+def model_detection(image, inter_values: dict, min_conf: float, input_mean = 127.5, input_std = 127.5):
     interpreter = inter_values['interpreter']
     
     # Get input and output tensors
@@ -43,5 +52,6 @@ def model_detection(image, inter_values: dict, input_mean = 127.5, input_std = 1
     boxes = interpreter.get_tensor(output_details[1]['index'])[0] # Bounding box coordinates of detected objects
     classes = interpreter.get_tensor(output_details[3]['index'])[0] # Class index of detected objects
     scores = interpreter.get_tensor(output_details[0]['index'])[0] # Confidence of detected objects
+    environment = find_center_coordinates(boxes, scores, classes, min_conf)
     
-    return boxes, classes, scores
+    return boxes, classes, scores, environment
