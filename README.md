@@ -13,9 +13,19 @@ A [test model](Model\test_model_001) is trained with 183 images.
 
 Trained script is taken from [colab](https://colab.research.google.com/github/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Train_TFLite2_Object_Detction_Model.ipynb). See [here](https://www.youtube.com/watch?v=XZ7FYAMCc4M&t=311s) for the Youtube Video.
 
+#### Examples of [Test Model 001]((Model\test_model_001)) 
+
+<p align="center">
+  <img src="https://via.placeholder.com/150" alt="Image 1" width="200"/>
+  <img src="https://via.placeholder.com/150" alt="Image 2" width="200"/>
+</p>
+
 ## Path Detection System
 
-
+<p align="center">
+  <img src="https://via.placeholder.com/150" alt="Image 1" width="200"/>
+  <img src="https://via.placeholder.com/150" alt="Image 2" width="200"/>
+</p>
 
 ## Installation (for Windows and TF GPU)
 

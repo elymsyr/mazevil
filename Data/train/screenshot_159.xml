@@ -1,0 +1,26 @@
+<annotation>
+	<folder>Images</folder>
+	<filename>screenshot_159.png</filename>
+	<path>Data/all\screenshot_159.png</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>800</width>
+		<height>450</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>play</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>315</xmin>
+			<ymin>265</ymin>
+			<xmax>486</xmax>
+			<ymax>298</ymax>
+		</bndbox>
+	</object>
+</annotation>
