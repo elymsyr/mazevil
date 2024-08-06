@@ -40,7 +40,7 @@ The aim is to detect the path and the objects on the game screen and creating an
 - [License](#license)
 
 ## Contributing
-We welcome contributions from the community! If you'd like to contribute, please fork the repository and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
+We welcome contributions from the community! If you'd like to contribute, please fork the repository and submit a pull request. For major changes, please open an issue first to discuss what you would like to change. See [CONTRIBUTING.md](CONTRIBUTING.md) for more...
 
 ## Data Preparation
 
