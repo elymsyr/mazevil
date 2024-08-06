@@ -5,27 +5,29 @@ This project is focused on custom object detection using Tensorflow API and path
 The aim is to detect the path and the object on the game screen and train a model using Reinforcement Learning algorithms.
 
 ## Table of Contents
-- [Path and Object Detection](#path-and-object-detection)
-  - [Custom Object Detection Test Model](#custom-object-detection-test-model)
-- [Path Detection System](#path-detection-system)
-- [Installation](#installation)
+- [YOLO Model](#yolo-model)
+  - [Path and Object Detection](#path-and-object-detection)
+- [TF Lite Model](#tf-lite-model)
+  - [Path and Object Detection](#path-and-object-detection)
+    - [Custom Object Detection Test Model](#custom-object-detection-test-model)
+    - [Path Detection System](#path-detection-system)
   - [Installation for Windows and TF GPU](#installation-for-windows-and-tf-gpu)
-  - [1. Tensorflow Models Repository](#1-tensorflow-models-repository)
-  - [2. Protobuf Repository](#2-protobuf-repository)
-  - [3. Cuda Toolkit and cuDNN](#3-cuda-toolkit-and-cudnn)
-      - [3.1 Cuda Installation](#31-cuda-installation)
-      - [3.2 cuDNN Installation](#32-cudnn-installation)
-      - [3.3 Update Environment Variables](#33-update-environment-variables)
-  - [4. Anaconda Environment](#4-anaconda-environment)
-  - [5. Install Dependencies](#5-install-dependencies)
-  - [6. Install TF-Lite API](#6-install-tf-lite-api)
-      - [6.1 Protoc](#61-protoc)
-      - [6.2 Setup](#62-setup)
-      - [6.3 Test Installation](#63-test-installation)
+    - [1. Tensorflow Models Repository](#1-tensorflow-models-repository)
+    - [2. Protobuf Repository](#2-protobuf-repository)
+    - [3. Cuda Toolkit and cuDNN](#3-cuda-toolkit-and-cudnn)
+    - [4. Anaconda Environment](#4-anaconda-environment)
+    - [5. Install Dependencies](#5-install-dependencies)
+    - [6. Install TF-Lite API](#6-install-tf-lite-api)
 
-## Path and Object Detection
+## YOLO Model
 
-### Custom Object Detection Test Model
+Coming Soon...
+
+## TF Lite Model
+
+### Path and Object Detection
+
+#### Custom Object Detection Test Model
 
 Trained script is taken from [colab](https://colab.research.google.com/github/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Train_TFLite2_Object_Detction_Model.ipynb). See [here](https://www.youtube.com/watch?v=XZ7FYAMCc4M&t=311s) for the Youtube Video.
 
@@ -39,7 +41,7 @@ A [test model](Model\test_model_001) is trained with 183 images. Images and xml 
   <img src="Docs\object_0 .png" alt="object_0" width="400"/>
 </p>
 
-## Path Detection System
+#### Path Detection System
 
 **Examples of Path Detection:**
 
@@ -47,12 +49,6 @@ A [test model](Model\test_model_001) is trained with 183 images. Images and xml 
   <img src="Docs\path_0.png" alt="path_0" width="400"/>
   <img src="Docs\path_1.png" alt="path_1" width="400"/>
 </p>
-
-## Installation
-
-### Installation for Windows and YOLO
-
-Coming soon :)
 
 ### Installation for Windows and TF Lite
 
