@@ -19,9 +19,9 @@ The aim is to detect the path and the object on the game screen and train a mode
   - [4. Anaconda Environment](#4-anaconda-environment)
   - [5. Install Dependencies](#5-install-dependencies)
   - [6. Install TF-Lite API](#6-install-tf-lite-api)
-      - [Protoc](#protoc)
-      - [Setup](#setup)
-      - [Test Installation](#test-installation)
+      - [6.1 Protoc](#61-protoc)
+      - [6.2 Setup](#62-setup)
+      - [6.3 Test Installation](#63-test-installation)
 
 ## Path and Object Detection
 
@@ -122,7 +122,7 @@ Activate environment:
 
 Installation is taken from [https://www.youtube.com/watch?v=rRwflsS67ow&t=780s](https://www.youtube.com/watch?v=rRwflsS67ow&t=780s)
 
-##### Protoc
+##### 6.1 Protoc
 
 Open Command Prompt with the path /path/TF2/models/research.
 Create a .py file with the following code and the name ***use_protobuf.py***:
@@ -143,7 +143,7 @@ Run script from Command Prompt:
 ```
 Expect no ouput and no errors.
 
-##### Setup
+##### 6.2 Setup
 
 Copy the setup.py file from **/path/TF2/models/research/object_detection/packages/tf2/** to **/path/TF2/models/research/**
 Open Command Prompt with the path /path/TF2/models/research and type:
@@ -156,7 +156,7 @@ Reinstall numpy using conda:
     conda install numpy
 ```
 
-##### Test Installation
+##### 6.3 Test Installation
 Open Command Prompt with the path /path/TF2/models/research and type:
 ```
     python objet_detection/builders/model_builder_tf2_test.py
