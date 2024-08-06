@@ -1,5 +1,10 @@
 # MazeVil AI
 
+
+<p align="center">
+  <img src="Docs\main.png" alt="object_2" width="400"/>
+</p>
+
 Welcome to the MazeVil AI project! This repository is dedicated to developing an AI agent capable of playing the game MazeVil autonomously. Our approach combines advanced machine learning techniques with sophisticated pathfinding and optimization algorithms to navigate the game environment and engage in combat sequences.
 
 **Components**
