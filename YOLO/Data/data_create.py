@@ -21,7 +21,7 @@ def split_list_fraction(input_list, fraction1):
     
     return piece1, piece2
 
-def move_files(model = 'TestModel001', val_size = 0.2):
+def move_files(model = 'TestModel001', val_size = 0.2, zip = False):
     labeled = "YOLO\\Data\\Labeled Images"
     images = "YOLO\\Data\\Images"
     train = f"YOLO\\Data\\Model Data\\{model}\\train"
@@ -75,6 +75,6 @@ def move_files(model = 'TestModel001', val_size = 0.2):
         for subkey, subvalue in value.items():
             print(f"    {subkey} - {len(subvalue)}")
             
-    # zip_folder(f"YOLO\\Data\\Model Data\\{model}", f'yolo_data_{model}') 
+    if zip: zip_folder(f"YOLO\\Data\\Model Data\\{model}", f'yolo_data_{model.lower()}') 
 
 move_files(model = 'TestModel001', val_size = 0.25)
