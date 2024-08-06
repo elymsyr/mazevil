@@ -85,3 +85,4 @@
 
 # # Train the model
 # !./darknet detector train data/obj.data cfg/yolov4-custom.cfg yolov4.weights
+

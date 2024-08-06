@@ -62,3 +62,4 @@ folder_path = 'YOLO Model/Data/Images'
 window_title = 'Mazevil'
 
 take_screenshot_of_window(window_title, folder_path, duration=10, interval=0.2)
+

@@ -4,6 +4,8 @@ A free demo version of the **Mazevil** game can be found at [Itch.io](https://sp
 This project is focused on custom object detection using Tensorflow API and path detection with OpenCV.
 The aim is to detect the path and the object on the game screen and an algorithm to get the best score.
 
+*Paths in [Test Scripts](Test Scripts) may need to be updated.*
+
 ## Table of Contents
 - [Data Preparation](#data-preparation)
   - [Data Gathering](#data-gathering)
