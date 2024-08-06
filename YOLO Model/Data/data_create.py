@@ -22,12 +22,12 @@ def split_list_fraction(input_list, fraction1):
     return piece1, piece2
 
 def move_files(model = 'TestModel001', val_size = 0.2, zip = False):
-    labeled = "YOLO\\Data\\Labeled Images"
-    images = "YOLO\\Data\\Images"
-    train = f"YOLO\\Data\\Model Data\\{model}\\train"
-    val = f"YOLO\\Data\\Model Data\\{model}\\val"
+    labeled = "YOLO Model\\Data\\Labeled Images"
+    images = "YOLO Model\\Data\\Images"
+    train = f"YOLO Model\\Data\\Model Data\\{model}\\train"
+    val = f"YOLO Model\\Data\\Model Data\\{model}\\val"
     
-    folder_system = [f"YOLO\\Data\\Model Data\\{model}", f"{train}\\images", f"{train}\\labels", f"{val}\\images", f"{val}\\labels"]
+    folder_system = [f"YOLO Model\\Data\\Model Data\\{model}", f"{train}\\images", f"{train}\\labels", f"{val}\\images", f"{val}\\labels"]
     
     for folder in folder_system:
         os.makedirs(folder, exist_ok=True)
@@ -63,7 +63,7 @@ def move_files(model = 'TestModel001', val_size = 0.2, zip = False):
         
     print(f"Total {count} txt files moved.\n")
     
-    shutil.copy(os.path.join(labeled, "classes.txt"), f"YOLO\\Data\\Model Data\\{model}")
+    shutil.copy(os.path.join(labeled, "classes.txt"), f"YOLO Model\\Data\\Model Data\\{model}")
 
     map = {
        'train': {'images': [f for f in os.listdir(f"{train}\\images") if f.endswith('.png')], 'labels': [f for f in os.listdir(f"{train}\\labels") if f.endswith('.png')]},
@@ -75,6 +75,6 @@ def move_files(model = 'TestModel001', val_size = 0.2, zip = False):
         for subkey, subvalue in value.items():
             print(f"    {subkey} - {len(subvalue)}")
             
-    if zip: zip_folder(f"YOLO\\Data\\Model Data\\{model}", f'yolo_data_{model.lower()}') 
+    if zip: zip_folder(f"YOLO Model\\Data\\Model Data\\{model}", f'yolo_data_{model.lower()}') 
 
 move_files(model = 'TestModel001', val_size = 0.25)

@@ -58,7 +58,7 @@ def take_screenshot_of_window(window_title, folder_path, duration=None, number_o
         print("Either duration or number_of_screenshots must be provided.")
 
 # Usage examples
-folder_path = 'YOLO/Data/Images'
+folder_path = 'YOLO Model/Data/Images'
 window_title = 'Mazevil'
 
 take_screenshot_of_window(window_title, folder_path, duration=10, interval=0.2)
