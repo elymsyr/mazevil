@@ -5,6 +5,9 @@ This project is focused on custom object detection using Tensorflow API and path
 The aim is to detect the path and the object on the game screen and an algorithm to get the best score.
 
 ## Table of Contents
+- [Data Preparation](#data-preparation)
+  - [Data Gathering](#data-gathering)
+  - [Labeling](#labeling)
 - [Algorithms](#algorithms)
 - [Traversing](#traversing)
 - [Mapping](#mapping)
@@ -19,6 +22,12 @@ The aim is to detect the path and the object on the game screen and an algorithm
     - [2. Anaconda Environment](#2-anaconda-environment)
     - [3. Install Dependencies](#3-install-dependencies)
     - [4. Install TF-Lite API](#4-install-tf-lite-api)
+
+## Data Preparation
+
+### Data Gathering
+
+### Labeling
 
 ## Algorithms
 
