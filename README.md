@@ -6,7 +6,6 @@ The aim is to detect the path and the object on the game screen and train a mode
 
 ## Table of Contents
 - [YOLO Model](#yolo-model)
-  - [Path and Object Detection](#path-and-object-detection)
 - [TF Lite Model](#tf-lite-model)
   - [Path and Object Detection](#path-and-object-detection)
     - [Custom Object Detection Test Model](#custom-object-detection-test-model)
