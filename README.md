@@ -54,7 +54,7 @@ A [test model](Model\test_model_001) is trained with 183 images. Images and xml 
 
 Coming soon :)
 
-### Installation for Windows and TF GPU
+### Installation for Windows and TF Lite
 
 #### 1. Tensorflow Models Repository
 
