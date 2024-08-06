@@ -44,7 +44,7 @@ A [test model](Model\test_model_001) is trained with 183 images. Images and xml 
 **Examples of Path Detection:**
 
 <p align="center">
-  <img src="Docs\path_0 .png" alt="path_0" width="400"/>
+  <img src="Docs\path_0.png" alt="path_0" width="400"/>
   <img src="Docs\path_1.png" alt="path_1" width="400"/>
 </p>
 
