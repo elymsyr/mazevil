@@ -2,9 +2,13 @@
 
 A free demo version of the **Mazevil** game can be found at [Itch.io](https://splix.itch.io/mazevil).
 This project is focused on custom object detection using Tensorflow API and path detection with OpenCV.
-The aim is to detect the path and the object on the game screen and train a model using Reinforcement Learning algorithms.
+The aim is to detect the path and the object on the game screen and an algorithm to get the best score.
 
 ## Table of Contents
+- [Algorithms](#algorithms)
+- [Traversing](#traversing)
+- [Mapping](#mapping)
+- [Fighting](#fighting)
 - [YOLO Model](#yolo-model)
 - [TF Lite Model](#tf-lite-model)
   - [Path and Object Detection](#path-and-object-detection)
@@ -15,6 +19,14 @@ The aim is to detect the path and the object on the game screen and train a mode
     - [2. Anaconda Environment](#2-anaconda-environment)
     - [3. Install Dependencies](#3-install-dependencies)
     - [4. Install TF-Lite API](#4-install-tf-lite-api)
+
+## Algorithms
+
+### Traversing
+
+### Mapping
+
+### Fighting
 
 ## YOLO Model
 
