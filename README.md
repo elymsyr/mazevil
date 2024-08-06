@@ -1,6 +1,6 @@
 # MAZEVIL
 
-A free demo version for **Mazevil** game can be found at [Itch.io](https://splix.itch.io/mazevil).
+A free demo version of the **Mazevil** game can be found at [Itch.io](https://splix.itch.io/mazevil).
 This project is focused on custom object detection using Tensorflow API and path detection with OpenCV.
 The aim is to detect the path and the object on the game screen and train a model using Reinforcement Learning algorithms.
 
@@ -27,10 +27,10 @@ Coming Soon...
 
 #### Custom Object Detection Test Model
 
-Trained script is taken from [colab](https://colab.research.google.com/github/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Train_TFLite2_Object_Detction_Model.ipynb). See [here](https://www.youtube.com/watch?v=XZ7FYAMCc4M&t=311s) for the Youtube Video.
+The trained script is taken from [colab](https://colab.research.google.com/github/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Train_TFLite2_Object_Detction_Model.ipynb). See [here](https://www.youtube.com/watch?v=XZ7FYAMCc4M&t=311s) for the Youtube Video.
 
 The data is taken using [LabelImg](https://github.com/HumanSignal/labelImg).
-A [test model](Model\test_model_001) is trained with 183 images. Images and xml files can be found at [**Data**](Data).
+A [test model](Model\test_model_001) is trained with 183 images. Images and XML files can be found at [**Data**](Data).
 
 **Examples of [Test Model 001]((Model\test_model_001)) with a score threshold of 0.4:**
 
@@ -39,7 +39,7 @@ A [test model](Model\test_model_001) is trained with 183 images. Images and xml 
   <img src="Docs\object_0 .png" alt="object_0" width="400"/>
 </p>
 
-#### Path Detection System
+#### Path Detection
 
 **Examples of Path Detection:**
 
@@ -54,21 +54,21 @@ A [test model](Model\test_model_001) is trained with 183 images. Images and xml 
 
 ##### 1.1 Cuda Installation
 
-Download and install verion 11.3 of [Cuda Toolkit](https://developer.nvidia.com/cuda-11.3.0-download-archive) from [https://developer.nvidia.com/cuda-11.3.0-download-archive](https://developer.nvidia.com/cuda-11.3.0-download-archive).
+Download and install version 11.3 of [Cuda Toolkit](https://developer.nvidia.com/cuda-11.3.0-download-archive) from [https://developer.nvidia.com/cuda-11.3.0-download-archive](https://developer.nvidia.com/cuda-11.3.0-download-archive).
 
 ##### 1.2 cuDNN Installation
 
 Download cuDNN v8.2.0 (April 23rd, 2021), for CUDA 11.x from [https://developer.nvidia.com/rdp/cudnn-archive](https://developer.nvidia.com/rdp/cudnn-archive).
 
  - Copy the contents of the bin folder from the cuDNN archive to the **C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.0\bin** directory.
- - Copy the contents of the include folder to the **C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.0\include** directory.
+ - Copy the contents of the included folder to the **C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.0\include** directory.
  - Copy the contents of the lib folder to the **C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.0\lib\x64** directory.
 
 ##### 1.3 Update Environment Variables
 
  - Open the Start Menu and search for "Environment Variables."
  - Click "Edit the system environment variables."
- - In the System Properties window, click the "Environment Variables" button.
+ - Click the "Environment Variables" button in the System Properties window.
  - In the Environment Variables window, find the Path variable under "System variables," select it, and click "Edit."
  - Add **C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.0\bin** to the list if it’s not already there.
 
@@ -103,7 +103,7 @@ Installation is taken from [https://www.youtube.com/watch?v=rRwflsS67ow&t=780s](
 
 ##### 4.1 Tensorflow Models Repository
 
-Download [Tensorflow Models Repo](https://github.com/tensorflow/models.git) to a file you have created. Let's say the file is path/TF2.
+Download [Tensorflow Models Repo](https://github.com/tensorflow/models.git) to your created file. Let's say the file is path/TF2.
 In Command Prompt, git can be used to download: 
 ```
     C:\path\TF2> git clone https://github.com/tensorflow/models.git
@@ -135,7 +135,7 @@ Run script from Command Prompt:
 ```
     python use_protobuf.py object_detection/protos protoc
 ```
-Expect no ouput and no errors.
+Expect no output and no errors.
 
 ##### 4.4 Setup
 
