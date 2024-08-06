@@ -40,7 +40,7 @@ def take_screenshot_of_window(window_title, folder_path, duration=None, number_o
             screenshot_path = os.path.join(folder_path, f'screenshot_{last_number}.png')
             time.sleep(0.5)  # Give the window some time to come into focus
             left, top, width, height = window.left, window.top, window.width, window.height
-            screenshot = pyautogui.screenshot(region=(left+8, top+31, width-16, height-39))
+            screenshot = pyautogui.screenshot(region=(left+8, top+49, width-16, height-109))
             screenshot.save(screenshot_path)
             print(f'Screenshot saved as {screenshot_path}')
             time.sleep(interval)
@@ -50,7 +50,7 @@ def take_screenshot_of_window(window_title, folder_path, duration=None, number_o
             screenshot_path = os.path.join(folder_path, f'screenshot_{last_number}.png')
             time.sleep(0.5)  # Give the window some time to come into focus
             left, top, width, height = window.left, window.top, window.width, window.height
-            screenshot = pyautogui.screenshot(region=(left+8, top+31, width-16, height-39))
+            screenshot = pyautogui.screenshot(region=(left+8, top+49, width-16, height-109))
             screenshot.save(screenshot_path)
             print(f'Screenshot saved as {screenshot_path}')
             time.sleep(interval)
@@ -61,4 +61,4 @@ def take_screenshot_of_window(window_title, folder_path, duration=None, number_o
 folder_path = 'YOLO/Data/Images'
 window_title = 'Mazevil'
 
-take_screenshot_of_window(window_title, folder_path, duration=10, interval=0.4)
+take_screenshot_of_window(window_title, folder_path, duration=10, interval=0.2)
