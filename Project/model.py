@@ -8,7 +8,7 @@ def model(model_path: str, lblpath: str):
     with open(lblpath, 'r') as f:
         labels = [line.strip() for line in f.readlines()]    
     
-    interpreter = tf.lite.Interpreter(model_path=model_path)
+    interpreter = tf.lite.Interpreter(model_path=model_path, experimental_delegates=[tf.lite.experimental.load_delegate('libtensorflowlite_gpu_delegate.dll')])
     interpreter.allocate_tensors()
 
     input_details = interpreter.get_input_details()
@@ -55,3 +55,13 @@ def model_detection(image, inter_values: dict, min_conf: float, input_mean = 127
     environment = find_center_coordinates(boxes, scores, classes, min_conf)
     
     return boxes, classes, scores, environment
+
+def check_delegate(interpreter):
+    delegate_details = interpreter._get_delegate_details()
+    if delegate_details:
+        print("Delegate details:", delegate_details)
+    else:
+        print("No delegate is being used.")
+
+inter_values = model("Model\\test_model_001\\detect.tflite", "Model\\test_model_001\\labelmap.txt")
+check_delegate(inter_values['interpreter'])
