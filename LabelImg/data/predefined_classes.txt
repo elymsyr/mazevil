@@ -12,3 +12,4 @@ treasury_open
 treasury_close
 treasury_monster
 key
+enemy_slug_boss
