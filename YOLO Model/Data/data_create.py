@@ -24,16 +24,21 @@ def split_list_fraction(input_list, fraction1):
 def move_files(model = 'TestModel001', val_size = 0.2, zip = False):
     labeled = "YOLO Model\\Data\\Labeled Images"
     images = "YOLO Model\\Data\\Images"
+    processed_images = "YOLO Model\\Data\\Processed Images"
     train = f"YOLO Model\\Data\\Model Data\\{model}\\train"
     val = f"YOLO Model\\Data\\Model Data\\{model}\\val"
     
-    folder_system = [f"YOLO Model\\Data\\Model Data\\{model}", f"{train}\\images", f"{train}\\labels", f"{val}\\images", f"{val}\\labels"]
+    folder_system = [f"YOLO Model\\Data\\Model Data\\{model}", f"{train}\\images", f"{train}\\labels", f"{val}\\images", f"{val}\\labels", processed_images]
     
     for folder in folder_system:
         os.makedirs(folder, exist_ok=True)
     
     # Get a list of all txt files in labeled
     txt_files = [f.replace('.txt', '') for f in os.listdir(labeled) if f.endswith('.txt')]
+    folder_images = [f.replace('.png', '') for f in os.listdir(images) if f.endswith('.png')]
+    folder_p_images = [f.replace('.png', '') for f in os.listdir(processed_images) if f.endswith('.png')]
+    
+    
     if 'classes' in txt_files: txt_files.remove('classes')
 
     txt_val, txt_train = split_list_fraction(txt_files, val_size)
@@ -42,20 +47,26 @@ def move_files(model = 'TestModel001', val_size = 0.2, zip = False):
     print(f"{len(txt_train)} for train.")
     print(f"{len(txt_val)} for val.\n")
     
+    total_count = 0
+    
     count = 0
     for png_file in txt_files:
         if 'classes' in png_file: continue 
         count += 1
-        src_png = os.path.join(images, f"{png_file}.png")
+        
+        if png_file in folder_images: src_png = os.path.join(images, f"{png_file}.png")
+        elif png_file in folder_p_images: src_png = os.path.join(processed_images, f"{png_file}.png")
+        else: print(f"Error while getting image {png_file}!"); count-= 1; continue
+        
         dest_png = os.path.join(f"{train}\\images", f"{png_file}.png") if png_file in txt_train else os.path.join(f"{val}\\images", f"{png_file}.png")
 
         shutil.copy(src_png, dest_png)
 
-    print(f"Total {count} png files moved.")
+    print(f"{count} png files moved from Images.")
 
     count = 0
     for label in txt_files:
-        count += 1    
+        count += 1
         src_png = os.path.join(labeled, f"{label}.txt")
         dest_png = os.path.join(f"{train}\\labels", f"{label}.txt") if label in txt_train else os.path.join(f"{val}\\labels", f"{label}.txt")
 
@@ -66,8 +77,8 @@ def move_files(model = 'TestModel001', val_size = 0.2, zip = False):
     shutil.copy(os.path.join(labeled, "classes.txt"), f"YOLO Model\\Data\\Model Data\\{model}")
 
     map = {
-       'train': {'images': [f for f in os.listdir(f"{train}\\images") if f.endswith('.png')], 'labels': [f for f in os.listdir(f"{train}\\labels") if f.endswith('.png')]},
-       'val': {'images': [f for f in os.listdir(f"{val}\\images") if f.endswith('.txt')], 'labels': [f for f in os.listdir(f"{val}\\labels") if f.endswith('.txt')]}
+       'train': {'images': [f for f in os.listdir(f"{train}\\images") if f.endswith('.png')], 'labels': [f for f in os.listdir(f"{train}\\labels") if f.endswith('.txt')]},
+       'val': {'images': [f for f in os.listdir(f"{val}\\images") if f.endswith('.png')], 'labels': [f for f in os.listdir(f"{val}\\labels") if f.endswith('.txt')]}
     }
     
     for key, value in map.items():
@@ -75,6 +86,6 @@ def move_files(model = 'TestModel001', val_size = 0.2, zip = False):
         for subkey, subvalue in value.items():
             print(f"    {subkey} - {len(subvalue)}")
             
-    if zip: zip_folder(f"YOLO Model\\Data\\Model Data\\{model}", f'yolo_data_{model.lower()}') 
+    if zip: zip_folder(f"YOLO Model\\Data\\Model Data\\{model}", f'YOLO Model\\Data\\Model Data\\yolo_data_{model.lower()}')
 
-move_files(model = 'TestModel001', val_size = 0.25)
+move_files(model = 'test01', val_size = 0.25, zip=True)
