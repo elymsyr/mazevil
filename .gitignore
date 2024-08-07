@@ -9,6 +9,7 @@ Processed\ Images/
 
 *.png
 *.txt
+*.xml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
