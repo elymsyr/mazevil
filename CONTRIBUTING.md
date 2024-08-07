@@ -22,7 +22,7 @@ Create a new branch for your changes:
 ```
 
 ### 4. Make Changes
-Make your changes to the codebase. Ensure that your code adheres to our coding standards and includes appropriate tests.
+Make your changes to the codebase. Ensure that your code adheres to my coding standards and includes appropriate tests.
 
 ### 5. Commit Your Changes
 Commit your changes with a clear and concise commit message:
