@@ -5,16 +5,15 @@
   <img src="Docs\main.png" alt="object_2" width="400"/>
 </p>
 
-Welcome to the MazeVil AI project! This repository is dedicated to developing an AI agent capable of playing the game MazeVil autonomously. My approach combines advanced machine learning techniques with sophisticated pathfinding and optimization algorithms to navigate the game environment and engage in combat sequences.
+Welcome to the MazeVil AI project! This repository is dedicated to developing an AI agent capable of playing the game MazeVil autonomously. My approach combines machine learning techniques with pathfinding and optimization algorithms to navigate the game environment and engage in combat sequences. The aim is to detect the path and the objects on the game screen and create an algorithm to get the best score, maybe even kill the boss.
+
+A free demo version of the **Mazevil** game can be found at [Itch.io](https://splix.itch.io/mazevil).
 
 **Components**
 - TensorFlow Lite Models
 - YOLOv7 Models
 - (kinda) SLAM Algorithms
 - Optimization Algorithms
-
-A free demo version of the **Mazevil** game can be found at [Itch.io](https://splix.itch.io/mazevil).
-The aim is to detect the path and the objects on the game screen and creating an algorithm to get the best score.
 
 *Paths in [Test Scripts](Test%20Scripts) may need to be updated.*
 
