@@ -61,5 +61,8 @@ def take_screenshot_of_window(window_title, folder_path, duration=None, number_o
 folder_path = 'YOLO Model/Data/Images'
 window_title = 'Mazevil'
 
-take_screenshot_of_window(window_title, folder_path, duration=10, interval=0.2)
+duration = 20
+interval = 0.15
+
+take_screenshot_of_window(window_title, folder_path, duration=duration, interval=interval)
 
