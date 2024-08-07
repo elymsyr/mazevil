@@ -1,0 +1,6 @@
+names: '[enemy_slug, enemy_slug_big, trap_off, trap_on, enemy_skeleton, enemy_skeleton_shoot,
+  next_screen, door, trap_door, gold, treasury_open, treasury_close, treasury_monster,
+  key, enemy_slug_boss]'
+nc: 15
+train: testdata01\train
+val: testdata01\val

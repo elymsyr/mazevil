@@ -32,13 +32,12 @@ config = {
     'train': f"{model}\\train",  # path to training dataset
     'val': f"{model}\\val",  # path to validation dataset
     'nc': nc,  # number of classes
-    'names': class_names_str  # list of class names
+    'names': f"[{', '.join(class_names)}]"  # list of class names
 }
 
 # Save the configuration to a YAML file
 with open(f'YOLO Model\\Model\\{model}\\{model.lower()}_config.yaml', 'w') as file:
     yaml.dump(config, file, default_flow_style=False)
-
 
 url = f'https://raw.githubusercontent.com/WongKinYiu/yolov7/main/cfg/training/{yolo_model}.yaml'
 response = requests.get(url)
@@ -47,7 +46,7 @@ response.raise_for_status()  # Ensure we notice bad responses
 # Load the YAML content
 config = yaml.safe_load(response.text)
 
-config['nc'] = nc 
+config['nc'] = nc
 
 with open(f"YOLO Model\\Model\\{model}\\{yolo_model}.yaml", 'w') as file:
     yaml.dump(config, file, default_flow_style=False)
