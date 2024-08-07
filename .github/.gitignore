@@ -1,5 +1,6 @@
 # Folders
 
+YOLO Model/Data
 /Data/Images/
 /Data/Labeled Images/
 LabelImg/
