@@ -7,10 +7,6 @@ LabelImg/
 */Data/Labeled\ Images
 Processed\ Images/
 
-*.png
-*.txt
-*.xml
-
 desktop.ini
 
 # Byte-compiled / optimized / DLL files
