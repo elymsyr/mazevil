@@ -1,3 +1,6 @@
+nc: 15
+depth_multiple: 1.0
+width_multiple: 1.0
 anchors:
 - - 12
   - 16
@@ -371,7 +374,6 @@ backbone:
   - - 1280
     - 1
     - 1
-depth_multiple: 1.0
 head:
 - - -1
   - 1
@@ -752,5 +754,3 @@ head:
   - IDetect
   - - nc
     - anchors
-nc: 15
-width_multiple: 1.0

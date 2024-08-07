@@ -2,6 +2,11 @@ import yaml, requests
 import shutil, os
 from data_create import move_files
 
+def represent_scalar_no_quotes(dumper, data):
+    return dumper.represent_scalar('tag:yaml.org,2002:str', data, style=None)
+
+yaml.add_representer(str, represent_scalar_no_quotes)
+
 
 yolo_model = 'yolov7x'
 model = 'testdata01'
@@ -29,10 +34,10 @@ nc = len(class_names)
 
 # Configuration details
 config = {
-    'train': f"{model}\\train",  # path to training dataset
-    'val': f"{model}\\val",  # path to validation dataset
+    'names': f'[{", ".join(class_names)}]',  # list of class names
     'nc': nc,  # number of classes
-    'names': f"[{', '.join(class_names)}]"  # list of class names
+    'val': f"{model}\\val",  # path to validation dataset
+    'train': f"{model}\\train",  # path to training dataset
 }
 
 # Save the configuration to a YAML file
@@ -46,7 +51,7 @@ response.raise_for_status()  # Ensure we notice bad responses
 # Load the YAML content
 config = yaml.safe_load(response.text)
 
-config['nc'] = nc
+config['nc'] = nc 
 
 with open(f"YOLO Model\\Model\\{model}\\{yolo_model}.yaml", 'w') as file:
-    yaml.dump(config, file, default_flow_style=False)
+    yaml.dump(config, file, default_flow_style=False, sort_keys=False, allow_unicode=True)
