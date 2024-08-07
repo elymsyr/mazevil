@@ -88,4 +88,4 @@ def move_files(model = 'TestModel001', val_size = 0.2, zip = False):
             
     if zip: zip_folder(f"YOLO Model\\Data\\Model Data\\{model}", f'YOLO Model\\Data\\Model Data\\yolo_data_{model.lower()}')
 
-move_files(model = 'test01', val_size = 0.25, zip=True)
+move_files(model = 'testdata01', val_size = 0.25, zip=True)
