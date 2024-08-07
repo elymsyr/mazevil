@@ -8,10 +8,10 @@
 Welcome to the MazeVil AI project! This repository is dedicated to developing an AI agent capable of playing the game MazeVil autonomously. My approach combines advanced machine learning techniques with sophisticated pathfinding and optimization algorithms to navigate the game environment and engage in combat sequences.
 
 **Components**
-- *TensorFlow Lite Models:* Lightweight neural networks optimized for real-time object detection.
-- *YOLOv7 Models:* Cutting-edge object detection models known for their speed and accuracy.
-- *SLAM Algorithms:* Techniques for creating a map of the game environment and localizing the player within it.
-- *Optimization Algorithms:* Methods for enhancing the AI's decision-making during combat sequences.
+- TensorFlow Lite Models
+- YOLOv7 Models
+- (kinda) SLAM Algorithms
+- Optimization Algorithms
 
 A free demo version of the **Mazevil** game can be found at [Itch.io](https://splix.itch.io/mazevil).
 The aim is to detect the path and the objects on the game screen and creating an algorithm to get the best score.
@@ -20,14 +20,14 @@ The aim is to detect the path and the objects on the game screen and creating an
 
 ## Table of Contents
 - [Contributing](#contributing)
-- [Data Preparation](#data-preparation)
-  - [Data Gathering](#data-gathering)
-  - [Labeling](#labeling)
-- [Algorithms](#algorithms)
-- [Traversing](#traversing)
-- [Mapping](#mapping)
-- [Fighting](#fighting)
-- [YOLO Model](#yolo-model)
+- [Data Preparation](#data-preparation) (Not written yet)
+  - [Data Gathering](#data-gathering) (Not written yet)
+  - [Labeling](#labeling) (Not written yet)
+- [Algorithms](#algorithms) (Not written yet)
+- [Traversing](#traversing) (Not written yet)
+- [Mapping](#mapping) (Not written yet)
+- [Fighting](#fighting) (Not written yet)
+- [YOLO Model](#yolo-model) (Not written yet)
 - [TF Lite Model](#tf-lite-model)
   - [Path and Object Detection](#path-and-object-detection)
     - [Custom Object Detection Test Model](#custom-object-detection-test-model)
