@@ -13,6 +13,7 @@ model_path = f'YOLO Model\\Model\\{model}'
 os.makedirs(model_path, exist_ok=True)
 
 
+
 # CREATE VAL AND TRAIN FILES
 
 move_files(model = model, val_size = val_size)
@@ -58,4 +59,4 @@ def zip_folder(folder_path, output_path, delete = False):
     # Delete the original folder
     if delete : shutil.rmtree(folder_path); print(f'Folder "{folder_path}" has been deleted')
     
-zip_folder(f"YOLO Model\Model\{model}", f"YOLO Model\Model\{model}", delete = False)
+zip_folder(f"YOLO Model\Model\{model}", f"YOLO Model\Model\{model}", delete = True)
