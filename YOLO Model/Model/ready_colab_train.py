@@ -2,7 +2,7 @@ import yaml, requests
 import shutil, os
 from data_create import move_files
 
-shutil.rmtree('YOLO Model\\Model\\testdata01')
+# shutil.rmtree('YOLO Model\\Model\\testdata01')
 
 yolo_model = 'yolov7x'
 model = 'testdata01'
@@ -12,7 +12,12 @@ model_path = f'YOLO Model\\Model\\{model}'
 
 os.makedirs(model_path, exist_ok=True)
 
-move_files(model = model, val_size = val_size)
+
+# CREATE VAL AND TRAIN FILES
+
+# move_files(model = model, val_size = val_size)
+
+
 
 train = f"YOLO Model\\Model\\{model}\\train"
 val = f"YOLO Model\\Model\\{model}\\val"
