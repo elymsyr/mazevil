@@ -1,8 +1,7 @@
 # Folders
 
-Images/
-Data/
-Labeled Images/
+/Data/Images/
+/Data/Labeled Images/
 LabelImg/
 Mazevil/
 Processed Images/
