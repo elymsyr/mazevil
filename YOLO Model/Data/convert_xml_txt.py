@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-import os
+import os, shutil
 
 # Define the classes in the order they appear in the YOLO classes file
 classes = [
@@ -41,6 +41,8 @@ def convert_all(input_path = 'YOLO Model\\Data\\Labeled Images', output_path = '
     xml = [f.replace('.xml', '') for f in os.listdir(input_path) if f.endswith('.xml')]
     for file in xml:
         convert_xml_to_yolo(os.path.join(input_path, f"{file}.xml"), os.path.join(input_path, f"{file}.txt"))
+        shutil.move(os.path.join(input_path, f"{file}.xml"), output_path)
+        print(file)
 
     
 convert_all()
