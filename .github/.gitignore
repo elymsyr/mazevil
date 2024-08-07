@@ -1,11 +1,14 @@
 # Folders
 
 /Data/Images/
-*/Data/Labeled*Images/
+/Data/Labeled\ Images/
 LabelImg/
-YOLO*Model/Data/Labeled*Images
+YOLO\ Model/Data/Labeled\ Images
 Mazevil/
-Processed*Images/
+Processed\ Images/
+
+*.png
+*.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
