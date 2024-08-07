@@ -1,5 +1,5 @@
 import yaml, requests
-import shutil, os
+import os
 from data_create import move_files
 
 
@@ -37,7 +37,7 @@ config = {
 }
 
 # Save the configuration to a YAML file
-with open(f'YOLO Model\\Model\\{model}\\{model.lower()}_config.yaml', 'w') as file:
+with open(f'YOLO Model\\Model\\{model}\\custom_data.yaml', 'w') as file:
     yaml.safe_dump(config, file)
 
 url = f'https://raw.githubusercontent.com/WongKinYiu/yolov7/main/cfg/training/{yolo_model}.yaml'
@@ -49,14 +49,5 @@ config = yaml.safe_load(response.text)
 
 config['nc'] = nc 
 
-with open(f"YOLO Model\\Model\\{model}\\{yolo_model}.yaml", 'w') as file:
+with open(f"YOLO Model\\Model\\{model}\\{yolo_model}_custom.yaml", 'w') as file:
     yaml.safe_dump(config, file)
-    
-    
-def zip_folder(folder_path, output_path, delete = False):
-    shutil.make_archive(output_path, 'zip', folder_path)
-    print(f'Folder "{folder_path}" has been zipped as "{output_path}.zip"')
-    # Delete the original folder
-    if delete : shutil.rmtree(folder_path); print(f'Folder "{folder_path}" has been deleted')
-    
-zip_folder(f"YOLO Model\Model\{model}", f"YOLO Model\Model\{model}", delete = True)
