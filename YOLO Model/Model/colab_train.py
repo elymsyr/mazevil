@@ -1,5 +1,5 @@
 import yaml, requests
-import os
+import shutil, os
 from data_create import move_files
 
 
@@ -15,7 +15,7 @@ os.makedirs(model_path, exist_ok=True)
 
 # CREATE VAL AND TRAIN FILES
 
-# move_files(model = model, val_size = val_size)
+move_files(model = model, val_size = val_size)
 
 
 
@@ -51,3 +51,12 @@ config['nc'] = nc
 
 with open(f"YOLO Model\\Model\\{model}\\{yolo_model}.yaml", 'w') as file:
     yaml.safe_dump(config, file)
+    
+    
+def zip_folder(folder_path, output_path, delete = False):
+    shutil.make_archive(output_path, 'zip', folder_path)
+    print(f'Folder "{folder_path}" has been zipped as "{output_path}.zip"')
+    # Delete the original folder
+    if delete : shutil.rmtree(folder_path); print(f'Folder "{folder_path}" has been deleted')
+    
+zip_folder(f"YOLO Model\Model\{model}", f"YOLO Model\Model\{model}", delete = True)
