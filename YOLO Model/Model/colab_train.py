@@ -3,8 +3,8 @@ import shutil, os
 from data_create import move_files
 
 
-yolo_model = 'yolov7x'
-model = 'testmodel01'
+yolo_model = 'yolov7'
+model = 'testmodel02'
 val_size = 0.2
 # shutil.rmtree(f'YOLO Model\\Model\\{model}')
 
@@ -59,4 +59,4 @@ def zip_folder(folder_path, output_path, delete = False):
     # Delete the original folder
     if delete : shutil.rmtree(folder_path); print(f'Folder "{folder_path}" has been deleted')
     
-zip_folder(f"YOLO Model\Model\{model}", f"YOLO Model\Model\{model}", delete = True)
+zip_folder(f"YOLO Model\Model\{model}", f"YOLO Model\Model\{model}_{yolo_model}", delete = True)
