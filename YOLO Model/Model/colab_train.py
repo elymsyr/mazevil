@@ -1,12 +1,12 @@
 import yaml, requests
-import shutil, os
+import os
 from data_create import move_files
 
 
 yolo_model = 'yolov7x'
 model = 'testmodel01'
 val_size = 0.2
-# shutil.rmtree(f'YOLO Model\\Model\\{model}')
+# from shutil import rmtree; rmtree(f'YOLO Model\\Model\\{model}')
 
 model_path = f'YOLO Model\\Model\\{model}'
 
