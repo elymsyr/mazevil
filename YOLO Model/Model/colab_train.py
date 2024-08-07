@@ -1,12 +1,12 @@
 import yaml, requests
-import os
+import shutil, os
 from data_create import move_files
 
 
 yolo_model = 'yolov7x'
 model = 'testmodel01'
 val_size = 0.2
-# from shutil import rmtree; rmtree(f'YOLO Model\\Model\\{model}')
+# shutil.rmtree(f'YOLO Model\\Model\\{model}')
 
 model_path = f'YOLO Model\\Model\\{model}'
 
@@ -51,3 +51,11 @@ config['nc'] = nc
 
 with open(f"YOLO Model\\Model\\{model}\\{yolo_model}_custom.yaml", 'w') as file:
     yaml.safe_dump(config, file)
+    
+def zip_folder(folder_path, output_path, delete = False):
+    shutil.make_archive(output_path, 'zip', folder_path)
+    print(f'Folder "{folder_path}" has been zipped as "{output_path}.zip"')
+    # Delete the original folder
+    if delete : shutil.rmtree(folder_path); print(f'Folder "{folder_path}" has been deleted')
+    
+zip_folder(f"YOLO Model\Model\{model}", f"YOLO Model\Model\{model}", delete = False)
