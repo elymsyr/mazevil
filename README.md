@@ -16,7 +16,7 @@ Welcome to the MazeVil AI project! This repository is dedicated to developing an
 A free demo version of the **Mazevil** game can be found at [Itch.io](https://splix.itch.io/mazevil).
 The aim is to detect the path and the objects on the game screen and creating an algorithm to get the best score.
 
-*Paths in [Test Scripts](Test Scripts) may need to be updated.*
+Paths in [Test Scripts](Test%20Scripts) may need to be updated.
 
 ## Table of Contents
 - [Contributing](#contributing)
