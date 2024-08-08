@@ -11,6 +11,8 @@ Processed\ Images/
 yolov7/
 desktop.ini
 
+*/Data/Model\ Data
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
