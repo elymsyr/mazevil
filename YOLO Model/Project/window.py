@@ -1,64 +1,88 @@
 import cv2
 import numpy as np
-import tensorflow as tf
-import pygetwindow as gw
-from PIL import ImageGrab
-from model import model, model_detection
-from path import path_detection
+import mss
+import torch
 
-def capture_window(window: gw.Win32Window, top_crop=0, bottom_crop=1):
-    return cv2.cvtColor(np.array(ImageGrab.grab(bbox=(window.left+8, window.top+8+22, window.right-8, window.bottom-8))), cv2.COLOR_BGR2RGB)[top_crop:-bottom_crop, :]
+# Function to capture a part of the screen
+def capture_screen(bbox):
+    with mss.mss() as sct:
+        img = np.array(sct.grab(bbox))
+        img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+        return img
 
-def window(model_path: str, lblpath: str, show: bool = True, scale_order: list = [9,3], min_conf: float = 0.4, window_title = 'Mazevil', full_title = 'Mazevil', lower_bound = np.array([100, 50, 50]), upper_bound = np.array([255, 150, 150])):
-    lower_bound = np.array([100, 50, 50])
-    upper_bound = np.array([255, 150, 150])
-    inter_values = model(model_path = model_path, lblpath = lblpath)
-    
-    windows = gw.getWindowsWithTitle(window_title)
-    window = windows[0]
-    window_image = capture_window(window, top_crop=20, bottom_crop=50)
-    imH, imW, _ = window_image.shape
+# Define the bounding box (bbox) for the part of the screen to capture
+bbox = (0, 0, 800, 600)
 
-    # for item in windows:
-    #     if item.title == full_title: window = item
+# Load YOLOv7 model
+model = torch.load('YOLO Model\\Model\\Trained Models\\testmodel02_yolov7-8-100.pt')
+model.eval()  # Set the model to evaluation mode
 
-    # np.set_printoptions(precision=6, suppress=True)
+# Define the device
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model.to(device)
 
-    while True:
-        window_image = capture_window(window, top_crop=20, bottom_crop=50)
+# Function to preprocess the image for YOLOv7
+def preprocess(image, img_size=640):
+    img = cv2.resize(image, (img_size, img_size))
+    img = img / 255.0
+    img = np.transpose(img, (2, 0, 1))
+    img = np.expand_dims(img, axis=0)
+    img = torch.tensor(img, dtype=torch.float32)
+    return img
 
-        boxes, classes, scores, environment = model_detection(image=window_image, inter_values=inter_values, min_conf=min_conf)
+# Function to post-process the detections
+def postprocess(detections, original_image, img_size=640, conf_threshold=0.25):
+    h, w, _ = original_image.shape
+    ratio = min(img_size / w, img_size / h)
+    padding_w = (img_size - w * ratio) / 2
+    padding_h = (img_size - h * ratio) / 2
 
-        binary_array = path_detection(rgb=cv2.cvtColor(window_image, cv2.COLOR_BGR2RGB), downscale_order=scale_order, lower_bound=lower_bound, upper_bound=upper_bound)
+    detections = detections[0]
+    detections = detections[detections[:, 4] > conf_threshold]
 
-        # for row in environment:
-        #     print(f"\nclass={inter_values['labels'][int(row[2])]}   x={float(row[0]):3f}  y={float(row[1]):3f}")
+    bboxes = []
+    for detection in detections:
+        x1, y1, x2, y2 = detection[:4]
+        conf = detection[4]
+        cls = detection[5]
 
-        detections = []
-        if show:
-            for i in range(len(scores)):
-                if ((scores[i] > min_conf) and (scores[i] <= 1.0)):
-                    ymin = int(max(1,(boxes[i][0] * imH)))
-                    xmin = int(max(1,(boxes[i][1] * imW)))
-                    ymax = int(min(imH,(boxes[i][2] * imH)))
-                    xmax = int(min(imW,(boxes[i][3] * imW)))
+        x1 = (x1 - padding_w) / ratio
+        x2 = (x2 - padding_w) / ratio
+        y1 = (y1 - padding_h) / ratio
+        y2 = (y2 - padding_h) / ratio
 
-                    cv2.rectangle(window_image, (xmin,ymin), (xmax,ymax), (10, 255, 0), 2)
+        bboxes.append((x1, y1, x2, y2, conf, cls))
 
-                    object_name = inter_values['labels'][int(classes[i])] # Look up object name from "labels" array using class index
-                    label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
-                    labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
-                    label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
-                    cv2.rectangle(window_image, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED) # Draw white box to put label text in
-                    cv2.putText(window_image, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
+    return bboxes
 
-                    detections.append([object_name, scores[i], xmin, ymin, xmax, ymax])                
+# Real-time object detection loop
+while True:
+    # Capture the screen
+    frame = capture_screen(bbox)
 
-            cv2.imshow(f'{full_title} Proccessed', window_image)
+    # Preprocess the image for YOLOv7
+    img = preprocess(frame).to(device)
 
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+    # Run the model
+    with torch.no_grad():
+        detections = model(img)
 
-    cv2.destroyAllWindows()
+    # Post-process the detections
+    bboxes = postprocess(detections, frame)
 
-window(model_path = 'Model\\test_model_001\\detect.tflite', lblpath = 'Model\\test_model_001\\labelmap.txt')
+    # Draw bounding boxes and labels on the frame
+    for bbox in bboxes:
+        x1, y1, x2, y2, conf, cls = bbox
+        label = f'{int(cls)} {conf:.2f}'
+        cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), 2)
+        cv2.putText(frame, label, (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 0), 2)
+
+    # Display the result
+    cv2.imshow('YOLOv7 Object Detection', frame)
+
+    # Exit on pressing 'q'
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+# Release resources
+cv2.destroyAllWindows()
