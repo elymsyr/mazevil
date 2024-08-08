@@ -8,7 +8,7 @@ def model(model_path: str, lblpath: str):
     with open(lblpath, 'r') as f:
         labels = [line.strip() for line in f.readlines()]    
     
-    interpreter = tf.lite.Interpreter(model_path=model_path, experimental_delegates=[tf.lite.experimental.load_delegate('libtensorflowlite_gpu_delegate.dll')])
+    interpreter = tf.lite.Interpreter(model_path=model_path)
     interpreter.allocate_tensors()
 
     input_details = interpreter.get_input_details()
@@ -62,6 +62,3 @@ def check_delegate(interpreter):
         print("Delegate details:", delegate_details)
     else:
         print("No delegate is being used.")
-
-inter_values = model("Model\\test_model_001\\detect.tflite", "Model\\test_model_001\\labelmap.txt")
-check_delegate(inter_values['interpreter'])

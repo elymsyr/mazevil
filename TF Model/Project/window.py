@@ -67,4 +67,4 @@ def window(model_path: str, lblpath: str, show: bool = True, scale_order: list =
 
         cv2.destroyAllWindows()
 
-window(model_path = 'Model\\test_model_001\\detect.tflite', lblpath = 'Model\\test_model_001\\labelmap.txt')
+window(model_path = 'TF Model\\Model\\test_model_001\\detect.tflite', lblpath = 'TF Model\\Model\\test_model_001\\labelmap.txt')
