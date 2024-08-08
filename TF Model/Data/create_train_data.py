@@ -91,7 +91,7 @@ def move_files(model = 'test_n', val_size = 0.1, zip = False, train_size = 0.8):
         
     print(f"Total {count} xml files moved.\n")
     
-    shutil.copy(os.path.join(labeled, "classes.txt"), f"YOLO Model\\Model\\{model}")
+    shutil.copy(os.path.join(labeled, "classes.txt"), f"TF Model\\Data\\Model Data\\{model}\\classes.txt")
 
     map = {
        'train': {'images': [f for f in os.listdir(train) if f.endswith('.png')], 'labels': [f for f in os.listdir(train) if f.endswith('.xml')]},
