@@ -104,6 +104,6 @@ def move_files(model = 'test_n', val_size = 0.1, zip = False, train_size = 0.8):
         for subkey, subvalue in value.items():
             print(f"    {subkey} - {len(subvalue)}")
             
-    if zip: zip_folder(f"TF Model\\Data\\Model Data\\{model}", 'TF Model\\Data\\Model Data\\images')
+    if zip: zip_folder(f"TF Model\\Data\\Model Data\\{model}", f'TF Model\\Data\\Model Data\\{model}\\images')
 
 move_files(model='test_2', zip=True)
