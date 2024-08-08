@@ -1,0 +1,75 @@
+item {
+  id: 1
+  name: 'enemy_slug'
+}
+
+item {
+  id: 2
+  name: 'enemy_slug_big'
+}
+
+item {
+  id: 3
+  name: 'trap_off'
+}
+
+item {
+  id: 4
+  name: 'trap_on'
+}
+
+item {
+  id: 5
+  name: 'enemy_skeleton'
+}
+
+item {
+  id: 6
+  name: 'enemy_skeleton_shoot'
+}
+
+item {
+  id: 7
+  name: 'next_screen'
+}
+
+item {
+  id: 8
+  name: 'door'
+}
+
+item {
+  id: 9
+  name: 'trap_door'
+}
+
+item {
+  id: 10
+  name: 'gold'
+}
+
+item {
+  id: 11
+  name: 'treasury_open'
+}
+
+item {
+  id: 12
+  name: 'treasury_close'
+}
+
+item {
+  id: 13
+  name: 'treasury_monster'
+}
+
+item {
+  id: 14
+  name: 'key'
+}
+
+item {
+  id: 15
+  name: 'enemy_slug_boss'
+}
+

@@ -1,0 +1,173 @@
+/content/mAP
+Calculating mAP at 0.50 IoU threshold...
+100.00% = door AP 
+85.71% = enemy_skeleton AP 
+86.67% = enemy_skeleton_shoot AP 
+96.72% = enemy_slug AP 
+95.51% = enemy_slug_big AP 
+100.00% = enemy_slug_boss AP 
+91.19% = gold AP 
+100.00% = key AP 
+85.19% = trap_door AP 
+95.12% = trap_off AP 
+44.44% = trap_on AP 
+100.00% = treasury_close AP 
+72.73% = treasury_open AP 
+mAP = 88.71%
+Calculating mAP at 0.55 IoU threshold...
+100.00% = door AP 
+85.71% = enemy_skeleton AP 
+86.67% = enemy_skeleton_shoot AP 
+96.72% = enemy_slug AP 
+95.51% = enemy_slug_big AP 
+100.00% = enemy_slug_boss AP 
+84.13% = gold AP 
+100.00% = key AP 
+85.19% = trap_door AP 
+95.12% = trap_off AP 
+44.44% = trap_on AP 
+100.00% = treasury_close AP 
+72.73% = treasury_open AP 
+mAP = 88.17%
+Calculating mAP at 0.60 IoU threshold...
+100.00% = door AP 
+85.71% = enemy_skeleton AP 
+66.67% = enemy_skeleton_shoot AP 
+96.72% = enemy_slug AP 
+95.51% = enemy_slug_big AP 
+100.00% = enemy_slug_boss AP 
+72.49% = gold AP 
+100.00% = key AP 
+85.19% = trap_door AP 
+95.12% = trap_off AP 
+44.44% = trap_on AP 
+100.00% = treasury_close AP 
+72.73% = treasury_open AP 
+mAP = 85.74%
+Calculating mAP at 0.65 IoU threshold...
+100.00% = door AP 
+66.67% = enemy_skeleton AP 
+66.67% = enemy_skeleton_shoot AP 
+96.72% = enemy_slug AP 
+95.51% = enemy_slug_big AP 
+100.00% = enemy_slug_boss AP 
+56.04% = gold AP 
+100.00% = key AP 
+85.19% = trap_door AP 
+95.12% = trap_off AP 
+44.44% = trap_on AP 
+100.00% = treasury_close AP 
+72.73% = treasury_open AP 
+mAP = 83.01%
+Calculating mAP at 0.70 IoU threshold...
+100.00% = door AP 
+66.67% = enemy_skeleton AP 
+33.33% = enemy_skeleton_shoot AP 
+96.72% = enemy_slug AP 
+95.51% = enemy_slug_big AP 
+100.00% = enemy_slug_boss AP 
+29.05% = gold AP 
+100.00% = key AP 
+85.19% = trap_door AP 
+95.12% = trap_off AP 
+44.44% = trap_on AP 
+100.00% = treasury_close AP 
+72.73% = treasury_open AP 
+mAP = 78.37%
+Calculating mAP at 0.75 IoU threshold...
+100.00% = door AP 
+42.86% = enemy_skeleton AP 
+33.33% = enemy_skeleton_shoot AP 
+90.20% = enemy_slug AP 
+95.51% = enemy_slug_big AP 
+83.67% = enemy_slug_boss AP 
+18.84% = gold AP 
+100.00% = key AP 
+75.00% = trap_door AP 
+95.12% = trap_off AP 
+44.44% = trap_on AP 
+100.00% = treasury_close AP 
+72.73% = treasury_open AP 
+mAP = 73.21%
+Calculating mAP at 0.80 IoU threshold...
+100.00% = door AP 
+20.00% = enemy_skeleton AP 
+0.00% = enemy_skeleton_shoot AP 
+49.81% = enemy_slug AP 
+36.92% = enemy_slug_big AP 
+83.67% = enemy_slug_boss AP 
+3.09% = gold AP 
+0.00% = key AP 
+61.11% = trap_door AP 
+95.12% = trap_off AP 
+44.44% = trap_on AP 
+100.00% = treasury_close AP 
+56.82% = treasury_open AP 
+mAP = 50.08%
+Calculating mAP at 0.85 IoU threshold...
+100.00% = door AP 
+20.00% = enemy_skeleton AP 
+0.00% = enemy_skeleton_shoot AP 
+6.10% = enemy_slug AP 
+1.01% = enemy_slug_big AP 
+40.31% = enemy_slug_boss AP 
+0.00% = gold AP 
+0.00% = key AP 
+61.11% = trap_door AP 
+90.76% = trap_off AP 
+44.44% = trap_on AP 
+0.00% = treasury_close AP 
+46.21% = treasury_open AP 
+mAP = 31.53%
+Calculating mAP at 0.90 IoU threshold...
+100.00% = door AP 
+2.86% = enemy_skeleton AP 
+0.00% = enemy_skeleton_shoot AP 
+1.26% = enemy_slug AP 
+0.00% = enemy_slug_big AP 
+14.29% = enemy_slug_boss AP 
+0.00% = gold AP 
+0.00% = key AP 
+44.44% = trap_door AP 
+48.87% = trap_off AP 
+44.44% = trap_on AP 
+0.00% = treasury_close AP 
+13.64% = treasury_open AP 
+mAP = 20.75%
+Calculating mAP at 0.95 IoU threshold...
+100.00% = door AP 
+0.00% = enemy_skeleton AP 
+0.00% = enemy_skeleton_shoot AP 
+0.00% = enemy_slug AP 
+0.00% = enemy_slug_big AP 
+3.57% = enemy_slug_boss AP 
+0.00% = gold AP 
+0.00% = key AP 
+0.00% = trap_door AP 
+1.28% = trap_off AP 
+0.00% = trap_on AP 
+0.00% = treasury_close AP 
+0.00% = treasury_open AP 
+mAP = 8.07%
+
+***mAP Results***
+
+Class		Average mAP @ 0.5:0.95
+---------------------------------------
+enemy_slug		63.10%
+enemy_slug_big		61.10%
+trap_off		80.67%
+trap_on		40.00%
+enemy_skeleton		47.62%
+enemy_skeleton_shoot		37.33%
+next_screen		0.00%
+door		100.00%
+trap_door		66.76%
+gold		35.48%
+treasury_open		55.31%
+treasury_close		70.00%
+treasury_monster		0.00%
+key		60.00%
+enemy_slug_boss		72.55%
+
+Overall		52.66%
