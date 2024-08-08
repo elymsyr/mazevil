@@ -6,8 +6,9 @@ LabelImg/
 */Data/Images
 */Data/Labeled\ Images
 */Model/Trained\ Models
+*/Model/yolov7/
 Processed\ Images/
-
+yolov7/
 desktop.ini
 
 # Byte-compiled / optimized / DLL files
