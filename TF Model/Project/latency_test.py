@@ -1,7 +1,6 @@
 import time
 import cv2
 import numpy as np
-import tensorflow as tf
 import pygetwindow as gw
 from PIL import ImageGrab
 from model import model, model_detection
@@ -94,7 +93,7 @@ def window(model_path: str, lblpath: str, show: bool = True, scale_order: list =
                         expand_by = 10
                         cv2.rectangle(map, (xmin - expand_by*2, ymin - expand_by), (xmax + expand_by*2, ymax + expand_by), (255, 255, 255), -1)
 
-            cv2.imshow(f'{full_title} Proccessed', map)
+            # cv2.imshow(f'{full_title} Proccessed', map)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -105,4 +104,9 @@ def window(model_path: str, lblpath: str, show: bool = True, scale_order: list =
     
     print(f"Avg Fps: {sum(fps_list)/len(fps_list)}\nAvg counter times:\n  Capture time: {(sum(capture_time)/len(capture_time)):.4f}, {max(capture_time)}, {min(capture_time)}\n  Detection time: {(sum(detection_time)/len(detection_time)):.4f}, {max(detection_time)}, {min(detection_time)}\n  Path time: {(sum(path_time)/len(path_time)):.4f}, {max(path_time)}, {min(path_time)}\n  Show time: {(sum(show_time)/len(show_time)):.4f}")
 
-window(model_path = 'TF Model\\Model\\test_model_001\\detect.tflite', lblpath = 'TF Model\\Model\\test_model_001\\labelmap.txt')
+model_name = 'test_1'
+
+model_path = f'TF Model\\Model\\{model_name}\\detect.tflite'
+lblpath = f'TF Model\\Model\\{model_name}\\labelmap.txt'
+
+window(model_path = model_path, lblpath = lblpath)
