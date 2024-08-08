@@ -93,13 +93,13 @@ def window(model_path: str, lblpath: str, show: bool = True, scale_order: list =
                         expand_by = 10
                         cv2.rectangle(map, (xmin - expand_by*2, ymin - expand_by), (xmax + expand_by*2, ymax + expand_by), (255, 255, 255), -1)
 
-            # cv2.imshow(f'{full_title} Proccessed', map)
+            cv2.imshow(f'{full_title} Proccessed', map)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
         t5 = time.perf_counter()
         show_time.append(t5-t4)
-        if len(show_time) > 100 : break
+        if len(show_time) > 500 : break
     cv2.destroyAllWindows()
     
     print(f"Avg Fps: {sum(fps_list)/len(fps_list)}\nAvg counter times:\n  Capture time: {(sum(capture_time)/len(capture_time)):.4f}, {max(capture_time)}, {min(capture_time)}\n  Detection time: {(sum(detection_time)/len(detection_time)):.4f}, {max(detection_time)}, {min(detection_time)}\n  Path time: {(sum(path_time)/len(path_time)):.4f}, {max(path_time)}, {min(path_time)}\n  Show time: {(sum(show_time)/len(show_time)):.4f}")
