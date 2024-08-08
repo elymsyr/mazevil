@@ -30,12 +30,13 @@ def window(model_path: str, lblpath: str, show: bool = True, scale_order: list =
 
         # np.set_printoptions(precision=6, suppress=True)
 
+
         while True:
             window_image = capture_window(window, top_crop=20, bottom_crop=50)
 
             boxes, classes, scores, environment = model_detection(image=window_image, inter_values=inter_values, min_conf=min_conf)
 
-            binary_array = path_detection(rgb=cv2.cvtColor(window_image, cv2.COLOR_BGR2RGB), downscale_order=scale_order, lower_bound=lower_bound, upper_bound=upper_bound)
+            # binary_array = path_detection(rgb=cv2.cvtColor(window_image, cv2.COLOR_BGR2RGB), downscale_order=scale_order, lower_bound=lower_bound, upper_bound=upper_bound)
 
             # for row in environment:
             #     print(f"\nclass={inter_values['labels'][int(row[2])]}   x={float(row[0]):3f}  y={float(row[1]):3f}")
