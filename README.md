@@ -208,19 +208,19 @@ Both models were not optimized and were only trained for testing purposes, but c
 
 **TF Lite Model:**
 
-Avg Fps: 4.971917397647826
-Avg counter times:
-- Capture time: 0.0490, 0.05994090000000085, 0.03851630000000128
-- Detection time: 0.1228, 0.1811626999999998, 0.11645099999999964
-- Path time: 0.0103, 0.01665039999999962, 0.009292600000000206
+- Avg Fps: 4.971917397647826
+- Avg counter times:
+  - Capture time: 0.0490, 0.05994090000000085, 0.03851630000000128
+  - Detection time: 0.1228, 0.1811626999999998, 0.11645099999999964
+  - Path time: 0.0103, 0.01665039999999962, 0.009292600000000206
 
 **YOLO Model:**
 
-Avg Fps: 0.6492984911701155
-Avg counter times:
-- Capture time: 0.0544, 0.06372010000000117, 0.04465930000000018
-- Detection time: 1.3130, 1.4072179, 1.2600715999999998
-- Path time: 0.1112, 0.1414434, 0.1040744999999994
+- Avg Fps: 0.6492984911701155
+- Avg counter times:
+  - Capture time: 0.0544, 0.06372010000000117, 0.04465930000000018
+  - Detection time: 1.3130, 1.4072179, 1.2600715999999998
+  - Path time: 0.1112, 0.1414434, 0.1040744999999994
 
 The difference in detection times is noteworthy: TF Lite's detection time averaged 0.1307 seconds, while YOLO's detection time averaged 1.3130 seconds. However, the real issue was not just the detection time but the overall system slowdown caused by YOLO. This resulted in an average FPS of only 0.65 for YOLO compared to 4.77 for TF Lite. Given the need for real-time performance and the strain on system resources, TF Lite was the clear choice for the rest of the project.
 
