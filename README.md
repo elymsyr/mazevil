@@ -196,7 +196,35 @@ Open Command Prompt with the path /path/TF2/models/research and type:
 
 ## YOLO Model
 
-Since the Y
+I conducted a series of tests comparing YOLO and TensorFlow Lite (TF Lite) models using the same randomly mixed image data and labels. The objective was to evaluate both models' performance in terms of accuracy and real-time latency. Although YOLO showed better accuracy in object detection, I encountered significant challenges with system performance while using it. Specifically, the YOLO model caused my older desktop computer to slow down drastically, making it nearly impossible to obtain results in real-time.
+
+While YOLO's latency itself wasn't terrible, the computational load it placed on my system was too heavy. The desktop, equipped with 8 GB of RAM and a GeForce 1650 mobile GPU, struggled under the load, resulting in severe slowdowns. In contrast, the TF Lite model, while less accurate, performed much more efficiently in real-time, making it the more practical choice for the remainder of the project.
+
+Both models were not optimized and were only trained for testing purposes, but considering the significant impact on system performance, I opted to use the TF Lite model. The main issue with YOLO seems to be its high demand on system resources, which my older hardware could not handle effectively.
+
+**Performance Data:**
+
+*(\* time: avg, max, min)*
+
+**TF Lite Model:**
+
+Avg Fps: 4.971917397647826
+Avg counter times:
+- Capture time: 0.0490, 0.05994090000000085, 0.03851630000000128
+- Detection time: 0.1228, 0.1811626999999998, 0.11645099999999964
+- Path time: 0.0103, 0.01665039999999962, 0.009292600000000206
+
+**YOLO Model:**
+
+Avg Fps: 0.6492984911701155
+Avg counter times:
+- Capture time: 0.0544, 0.06372010000000117, 0.04465930000000018
+- Detection time: 1.3130, 1.4072179, 1.2600715999999998
+- Path time: 0.1112, 0.1414434, 0.1040744999999994
+
+The difference in detection times is noteworthy: TF Lite's detection time averaged 0.1307 seconds, while YOLO's detection time averaged 1.3130 seconds. However, the real issue was not just the detection time but the overall system slowdown caused by YOLO. This resulted in an average FPS of only 0.65 for YOLO compared to 4.77 for TF Lite. Given the need for real-time performance and the strain on system resources, TF Lite was the clear choice for the rest of the project.
+
+*In addition, deploying models on a cloud service and obtaining detection results via an API will be considered and tested as a potential solution to address performance concerns and further optimize results.*
 
 ## License
 
