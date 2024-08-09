@@ -1,5 +1,5 @@
 import time
-import cv2
+import dxcam, cv2, win32gui
 import numpy as np
 import pygetwindow as gw
 from PIL import ImageGrab
@@ -37,7 +37,7 @@ def capture_window(window: gw.Win32Window, top_crop=0, bottom_crop=1):
     matlike_image = cv2.cvtColor(np.array(img), cv2.COLOR_BGR2RGB)
     return matlike_image[top_crop:-bottom_crop, :]
 
-def window(model_path: str, lblpath: str, show: bool = True, scale_order: list = [27], min_conf: float = 0.4, window_title = 'Mazevil', full_title = 'Mazevil', lower_bound = np.array([100, 50, 50]), upper_bound = np.array([255, 150, 150])):
+def window(model_name : str, model_path: str, lblpath: str, time_passed:int = 200, show_result:bool = True, path: bool = True, model_detect: bool = True, scale_order: list = [8,3], min_conf: float = 0.4, window_title = 'Mazevil', full_title = 'Mazevil', lower_bound = np.array([100, 50, 50]), upper_bound = np.array([255, 150, 150])):
     lower_bound = np.array([100, 50, 50])
     upper_bound = np.array([255, 150, 150])
     inter_values = model(model_path = model_path, lblpath = lblpath)
@@ -55,7 +55,7 @@ def window(model_path: str, lblpath: str, show: bool = True, scale_order: list =
     fps_list = []
     prevTime = 0
     fps = 0   
-
+    env = None
     while True:
         currTime = time.perf_counter()
         fps = 1 / (currTime - prevTime)
@@ -67,20 +67,12 @@ def window(model_path: str, lblpath: str, show: bool = True, scale_order: list =
         t2 = time.perf_counter()
         capture_time.append(t2-t1)
         t2 = time.perf_counter()
-        boxes, classes, scores, environment = model_detection(image=window_image, inter_values=inter_values, min_conf=min_conf)
+        if model_detect: boxes, classes, scores, env = model_detection(image=window_image, inter_values=inter_values, min_conf=min_conf)
         t3 = time.perf_counter()
         detection_time.append(t3-t2)
         t3 = time.perf_counter()
-        binary_array = path_detection(rgb=cv2.cvtColor(window_image, cv2.COLOR_BGR2RGB), downscale_order=scale_order, lower_bound=lower_bound, upper_bound=upper_bound)
-        t4 = time.perf_counter()
-        path_time.append(t4-t3)
-        t4 = time.perf_counter()
-
-        for scale in scale_order:
-            binary_array = upscale_binary_array(binary_array, scale)
-        map = (binary_array * 255).astype(np.uint8)
-
-        if show:
+        
+        if env is not None:
             for i in range(len(scores)):
                 if ((scores[i] > min_conf) and (scores[i] <= 1.0)):
                     ymin = int(max(1,(boxes[i][0] * imH)))
@@ -90,24 +82,139 @@ def window(model_path: str, lblpath: str, show: bool = True, scale_order: list =
 
                     object_name = inter_values['labels'][int(classes[i])]
                     if object_name == 'trap_off':
-                        expand_by = 10
-                        cv2.rectangle(map, (xmin - expand_by*2, ymin - expand_by), (xmax + expand_by*2, ymax + expand_by), (255, 255, 255), -1)
-                        # cv2.rectangle(window_image, (xmin - expand_by*2, ymin - expand_by), (xmax + expand_by*2, ymax + expand_by), (255, 255, 255), -1)
+                        expand_by = 20
+                        cv2.rectangle(window_image, (xmin - expand_by, ymin - expand_by), (xmax + expand_by*2, ymax + expand_by), (184,111,80), -1)
 
+        if path: binary_array = path_detection(rgb=cv2.cvtColor(window_image, cv2.COLOR_BGR2RGB), downscale_order=scale_order, lower_bound=lower_bound, upper_bound=upper_bound)
+        t4 = time.perf_counter()
+        path_time.append(t4-t3)
+        t4 = time.perf_counter()
+
+        if show_result:
+            if path:
+                for scale in scale_order:
+                    binary_array = upscale_binary_array(binary_array, scale)
+                map = (binary_array * 255).astype(np.uint8)
+            else: map = window_image
             cv2.imshow(f'{full_title} Proccessed', map)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+                    break
         t5 = time.perf_counter()
         show_time.append(t5-t4)
-        if len(show_time) > 500 : break
+        if len(show_time) > time_passed : break
     cv2.destroyAllWindows()
     
-    print(f"Avg Fps: {sum(fps_list)/len(fps_list)}\nAvg counter times:\n  Capture time: {(sum(capture_time)/len(capture_time)):.4f}, {max(capture_time)}, {min(capture_time)}\n  Detection time: {(sum(detection_time)/len(detection_time)):.4f}, {max(detection_time)}, {min(detection_time)}\n  Path time: {(sum(path_time)/len(path_time)):.4f}, {max(path_time)}, {min(path_time)}\n  Show time: {(sum(show_time)/len(show_time)):.4f}")
+    return f"GW:\n  Times Passed: {time_passed}\n  Model: {model_name if model_detect else '__no_detection__'}\n  Avg Fps: {sum(fps_list)/len(fps_list)}\n  Avg counter times:\n    Capture time: {(sum(capture_time)/len(capture_time)):.4f}, {max(capture_time)}, {min(capture_time)}\n    Detection time: {(sum(detection_time)/len(detection_time)) if model_detect else '__no_detection__'}, {max(detection_time)}, {min(detection_time)}\n    Path time: {(sum(path_time)/len(path_time)) if path else '__no_path__'}, {max(path_time)}, {min(path_time)}\n    Show time: {(sum(show_time)/len(show_time)) if show_result else '__no_show__'}, , {max(show_time)}, {min(show_time)}\n\n"
+
+def window_dxcam(model_name: str, model_path: str, lblpath: str, time_passed: int = 200, show_result:bool = True, path: bool = True, model_detect: bool = True, scale_order: list = [9, 3], min_conf: float = 0.4, window_title = 'Mazevil', full_title = 'Mazevil', lower_bound = np.array([100, 50, 50]), upper_bound = np.array([255, 150, 150])):
+    lower_bound = np.array([100, 50, 50])
+    upper_bound = np.array([255, 150, 150])
+    inter_values = model(model_path = model_path, lblpath = lblpath)
+
+    window_title = 'Mazevil'
+    hwnd = win32gui.FindWindow(None, window_title)
+    cam = dxcam.create(output_color="BGR")
+    window_image = cam.grab(region=win32gui.GetWindowRect(hwnd))
+    imH, imW, _ = window_image.shape
+
+    capture_time = []
+    detection_time = []
+    path_time = []
+    show_time = []
+    fps_list = []
+    prevTime = 0
+    fps = 0
+    env = None
+    while True:
+        
+        t1 = time.perf_counter()
+        left, top, right, bottom = win32gui.GetWindowRect(hwnd)
+        window_image = cam.grab(region=(left+8, top+30+20, right-8, bottom-8-50))
+        t2 = time.perf_counter()
+
+        if window_image is not None:
+            capture_time.append(t2-t1)
+
+            currTime = time.perf_counter()
+            fps = 1 / (currTime - prevTime)
+            fps_list.append(fps)
+            prevTime = currTime
+
+            t2 = time.perf_counter()
+            if model_detect: boxes, classes, scores, env = model_detection(image=window_image, inter_values=inter_values, min_conf=min_conf)
+            t3 = time.perf_counter()
+            detection_time.append(t3-t2)
+            t3 = time.perf_counter()
+
+            if env is not None:
+                for i in range(len(scores)):
+                    if ((scores[i] > min_conf) and (scores[i] <= 1.0)):
+                        ymin = int(max(1,(boxes[i][0] * imH)))
+                        xmin = int(max(1,(boxes[i][1] * imW)))
+                        ymax = int(min(imH,(boxes[i][2] * imH)))
+                        xmax = int(min(imW,(boxes[i][3] * imW)))
+                        object_name = inter_values['labels'][int(classes[i])]
+                        if object_name == 'trap_off':
+                            expand_by = 20
+                            cv2.rectangle(window_image, (xmin - expand_by, ymin - expand_by), (xmax + expand_by*2, ymax + expand_by), (184,111,80), -1)
+
+            if path: binary_array = path_detection(rgb=cv2.cvtColor(window_image, cv2.COLOR_BGR2RGB), downscale_order=scale_order, lower_bound=lower_bound, upper_bound=upper_bound)
+
+            t4 = time.perf_counter()
+            path_time.append(t4-t3)
+            
+            t4 = time.perf_counter()
+
+            if show_result:
+                if path:
+                    for scale in scale_order:
+                        binary_array = upscale_binary_array(binary_array, scale)
+                    map = (binary_array * 255).astype(np.uint8)
+                else: map = window_image
+                cv2.imshow(f'{full_title} Proccessed', map)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+            t5 = time.perf_counter()
+            show_time.append(t5-t4)
+            if len(show_time) > time_passed : break
+    cv2.destroyAllWindows()
+    del cam
+
+    return f"DXCAM:\n  Times Passed: {time_passed}\n  Model: {model_name if model_detect else '__no_detection__'}\n  Avg Fps: {sum(fps_list)/len(fps_list)}\n  Avg counter times:\n    Capture time: {(sum(capture_time)/len(capture_time)):.4f}, {max(capture_time)}, {min(capture_time)}\n    Detection time: {(sum(detection_time)/len(detection_time)) if model_detect else '__no_detection__'}, {max(detection_time)}, {min(detection_time)}\n    Path time: {(sum(path_time)/len(path_time)) if path else '__no_path__'}, {max(path_time)}, {min(path_time)}\n    Show time: {(sum(show_time)/len(show_time)) if show_result else '__no_show__'}, , {max(show_time)}, {min(show_time)}\n\n"
+
 
 model_name = 'test_1'
 
 model_path = f'TF Model\\Model\\{model_name}\\detect.tflite'
 lblpath = f'TF Model\\Model\\{model_name}\\labelmap.txt'
 
-window(model_path = model_path, lblpath = lblpath)
+# conf = {
+#     'time_passed': 400,
+#     'show_result': False,
+#     'path': False,
+#     'model_detect': False,
+#     'model_name': model_name,
+#     'model_path': model_path,
+#     'lblpath': lblpath
+# }
+
+conf = {
+    'time_passed': 300,
+    'show_result': True,
+    'path': True,
+    'model_detect': True,
+    'model_name': model_name,
+    'model_path': model_path,
+    'lblpath': lblpath,
+    'scale_order': []
+}
+
+text1 = window(**conf)
+text2 = window_dxcam(**conf)
+note = 'scale_order: []'
+
+# with open('TF Model\\Project\\latency_test_results.txt', 'a') as file:
+#     if len(note)>3 : file.write(f"Notes: {note}")
+#     file.write(text1)
+#     file.write(text2)
