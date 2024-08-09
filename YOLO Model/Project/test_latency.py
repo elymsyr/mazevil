@@ -19,6 +19,9 @@ def capture_window(window: gw.Win32Window, top_crop=0, bottom_crop=1):
 
 # Load YOLOv7 model
 model, device = model_load(path_or_model='YOLO Model/Model/Trained Models/testmodel02_yolov7-8-100.pt')
+# model = torch.hub.load('WongKinYiu/yolov7', 'custom', path_or_model='YOLO Model\\Model\\Trained Models\\testmodel02_yolov7-8-100.pt')
+# model = model.autoshape()  # for PIL/cv2/np inputs and NMS
+
 
 # Set model parameters
 model.conf = 0.3  # NMS confidence threshold
@@ -61,13 +64,13 @@ while True:
     path_time.append(t4-t3)
     t4 = time.perf_counter()
     
-    img = display(prediction.imgs, prediction.pred, prediction.names)
+    # img = display(prediction.imgs, prediction.pred, prediction.names)
 
     t5 = time.perf_counter()
     show_time.append(t5-t4)
     if len(show_time) > 20 : break
 
-    # cv2.imshow('YOLOv7 Object Detection', img)
+    cv2.imshow('YOLOv7 Object Detection', img)
     if cv2.waitKey(1) == 27:
         break
 
