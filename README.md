@@ -20,8 +20,6 @@ A free demo version of the **Mazevil** game can be found at [Itch.io](https://sp
   - [Traversing](#traversing)
   - [Mapping](#mapping)
   - [Fighting](#fighting)
-- [YOLO Model](#yolo-model)
-  - [Object Detection](#object-detection-yolo)
 - [TF Lite Model](#tf-lite-model)
   - [Object Detection](#object-detection-tf)
   - [Installation of TF Lite for Windows](#installation-of-tf-lite-for-windows)
@@ -29,6 +27,7 @@ A free demo version of the **Mazevil** game can be found at [Itch.io](https://sp
     - [2. Anaconda Environment](#2-anaconda-environment)
     - [3. Install Dependencies](#3-install-dependencies)
     - [4. Install TF-Lite API](#4-install-tf-lite-api)
+- [YOLO Model](#yolo-model)    
 - [License](#license)
 
 ## Contributing
@@ -69,22 +68,18 @@ To effectively navigate and visit different dungeon rooms, the system must maint
 
 The combat system is designed to adapt to different enemy types, focusing on dodging ranged attacks while maintaining a safe distance from melee attackers. The player is programmed to keep the mouse cursor trained on the nearest enemy, continuously holding down the left mouse button to attack. This straightforward combat approach not changes a lot when the player enters a boss dungeon room, however the challenges escalate. Although the current plan provides a solid foundation, there may be still many aspects of the combat system that need to be refined and expanded as the project progresses.
 
-## YOLO Model
-
-### <a name="object-detection-yolo">Object Detection</a>
-
 ## TF Lite Model
 
 ### <a name="object-detection-tf">Object Detection</a>
 
 **Custom Object Detection Test Model**
 
-The trained script is taken from [colab](https://colab.research.google.com/github/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Train_TFLite2_Object_Detction_Model.ipynb). See [here](https://www.youtube.com/watch?v=XZ7FYAMCc4M&t=311s) for the Youtube Video.
+The train script is taken from [colab](https://colab.research.google.com/github/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Train_TFLite2_Object_Detction_Model.ipynb). See [here](https://www.youtube.com/watch?v=XZ7FYAMCc4M&t=311s) for the Youtube Video.
 
 The data is taken using [LabelImg](https://github.com/HumanSignal/labelImg).
-A [test model](Model\test_model_001) is trained with 183 images. Images and XML files can be found at [**Data**](Data).
+The test model [test_0](TF%20Model\Model\test_0) is trained with 183 images. Images and XML files can be found at [**Data**](Data).
 
-**Examples of [Test Model 001]((Model\test_model_001)) with a score threshold of 0.4:**
+**Examples of the model [test_0](TF%20Model\Model\test_0) with a score threshold of 0.4:**
 
 <p align="center">
   <img src="Docs\object_2.png" alt="object_2" width="400"/>
@@ -198,6 +193,10 @@ Open Command Prompt with the path /path/TF2/models/research and type:
 ```
     python objet_detection/builders/model_builder_tf2_test.py
 ```
+
+## YOLO Model
+
+Since the Y
 
 ## License
 
