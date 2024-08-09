@@ -9,28 +9,21 @@ Welcome to the MazeVil AI project! This repository is dedicated to developing an
 
 A free demo version of the **Mazevil** game can be found at [Itch.io](https://splix.itch.io/mazevil).
 
-**Components**
-- TensorFlow Lite Models
-- YOLOv7 Models
-- (kinda) SLAM Algorithms
-- Optimization Algorithms
-
 *Paths in [Test Scripts](Test%20Scripts) may need to be updated.*
 
 ## Table of Contents
 - [Contributing](#contributing)
-- [Data Preparation](#data-preparation) (Not written yet)
-  - [Data Gathering](#data-gathering) (Not written yet)
-  - [Labeling](#labeling) (Not written yet)
-- [Algorithms](#algorithms) (Not written yet)
-- [Traversing](#traversing) (Not written yet)
-- [Mapping](#mapping) (Not written yet)
-- [Fighting](#fighting) (Not written yet)
-- [YOLO Model](#yolo-model) (Not written yet)
+- [Data Preparation](#data-preparation)
+  - [Data Gathering](#data-gathering)
+  - [Labeling](#labeling)
+- [Algorithms](#algorithms)
+  - [Traversing](#traversing)
+  - [Mapping](#mapping)
+  - [Fighting](#fighting)
+- [YOLO Model](#yolo-model)
+  - [Object Detection](#object-detection-yolo)
 - [TF Lite Model](#tf-lite-model)
-  - [Path and Object Detection](#path-and-object-detection)
-    - [Custom Object Detection Test Model](#custom-object-detection-test-model)
-    - [Path Detection System](#path-detection-system)
+  - [Object Detection](#object-detection-tf)
   - [Installation of TF Lite for Windows](#installation-of-tf-lite-for-windows)
     - [1. Cuda Toolkit and cuDNN](#1-cuda-toolkit-and-cudnn)
     - [2. Anaconda Environment](#2-anaconda-environment)
@@ -65,19 +58,26 @@ The traversal of the game environment is guided by the Greedy Best-First Search 
 
 To effectively navigate and visit different dungeon rooms, the system must maintain an updated map of the discovered rooms and pathways. The script [path.py](TF%20Model\Project\path.py) is integral to this mapping process, continuously analyzing the screen to track the player's progress. While inactive traps are marked as safe paths, the script updates the current screen's data, which is stored in an array. As the player moves through the game, both the values and dimensions of another array—initialized at the start of the game—are updated to reflect the changing environment. Although a basic SLAM (Simultaneous Localization and Mapping) algorithm could be implemented to enhance this mapping, the project is currently in the early stages of development, with more advanced features yet to be realized.
 
+**Examples of Path Detection (An Early Version):**
+
+<p align="center">
+  <img src="Docs\path_0.png" alt="path_0" width="400"/>
+  <img src="Docs\path_1.png" alt="path_1" width="400"/>
+</p>
+
 ### Fighting
 
 The combat system is designed to adapt to different enemy types, focusing on dodging ranged attacks while maintaining a safe distance from melee attackers. The player is programmed to keep the mouse cursor trained on the nearest enemy, continuously holding down the left mouse button to attack. This straightforward combat approach not changes a lot when the player enters a boss dungeon room, however the challenges escalate. Although the current plan provides a solid foundation, there may be still many aspects of the combat system that need to be refined and expanded as the project progresses.
 
 ## YOLO Model
 
-Coming Soon...
+### <a name="object-detection-yolo">Object Detection</a>
 
 ## TF Lite Model
 
-### Path and Object Detection
+### <a name="object-detection-tf">Object Detection</a>
 
-#### Custom Object Detection Test Model
+**Custom Object Detection Test Model**
 
 The trained script is taken from [colab](https://colab.research.google.com/github/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Train_TFLite2_Object_Detction_Model.ipynb). See [here](https://www.youtube.com/watch?v=XZ7FYAMCc4M&t=311s) for the Youtube Video.
 
@@ -89,15 +89,6 @@ A [test model](Model\test_model_001) is trained with 183 images. Images and XML 
 <p align="center">
   <img src="Docs\object_2.png" alt="object_2" width="400"/>
   <img src="Docs\object_0 .png" alt="object_0" width="400"/>
-</p>
-
-#### Path Detection
-
-**Examples of Path Detection:**
-
-<p align="center">
-  <img src="Docs\path_0.png" alt="path_0" width="400"/>
-  <img src="Docs\path_1.png" alt="path_1" width="400"/>
 </p>
 
 ### Installation of TF Lite for Windows
