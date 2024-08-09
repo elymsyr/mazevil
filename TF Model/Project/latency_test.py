@@ -92,6 +92,7 @@ def window(model_path: str, lblpath: str, show: bool = True, scale_order: list =
                     if object_name == 'trap_off':
                         expand_by = 10
                         cv2.rectangle(map, (xmin - expand_by*2, ymin - expand_by), (xmax + expand_by*2, ymax + expand_by), (255, 255, 255), -1)
+                        # cv2.rectangle(window_image, (xmin - expand_by*2, ymin - expand_by), (xmax + expand_by*2, ymax + expand_by), (255, 255, 255), -1)
 
             cv2.imshow(f'{full_title} Proccessed', map)
 
