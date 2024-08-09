@@ -36,14 +36,14 @@ def window(model_path: str, lblpath: str, show: bool = True, scale_order: list =
     
     window_title = 'Mazevil'
     hwnd = win32gui.FindWindow(None, window_title)
-    cam = dxcam.create(output_color="RGB")
+    cam = dxcam.create(output_color="BGR")
     window_image = cam.grab(region=win32gui.GetWindowRect(hwnd))
     imH, imW, _ = window_image.shape
+    
     capture_time = []
     detection_time = []
     path_time = []
     show_time = []
-    
     fps_list = []
     prevTime = 0
     fps = 0   
