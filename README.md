@@ -13,7 +13,7 @@ A free demo version of the **Mazevil** game can be found at [Itch.io](https://sp
 
 ## Latest Updates
 
-**Commit (3fa2674):** All the files and folders of yolov7 model is now moved into the folder [yolov7](). I have decided to train a new model using yolov8.
+- **Commit (3fa2674):** All the files and folders of yolov7 model is now moved from [YOLO Model](YOLO%20Model) into the folder [yolov7](Test%20Scripts\yolov7). Paths may need to be updated.
 
 <!-- - **Release:** v1.2.3 (Released on 2024-08-10)
 - **Commit:** 1a2b3c4d5e6f7g8h9i0j (2024-08-10) -->
