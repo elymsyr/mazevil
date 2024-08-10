@@ -49,11 +49,11 @@ We welcome contributions from the community! If you'd like to contribute, please
 
 ### Data Gathering
 
-The data acquisition process involves systematically capturing screenshots from the game environment using two specialized scripts [*ss.py*](TF%20Model\Data\ss.py). The script is meticulously designed to automate the screenshot capturing process, ensuring that the data reflects a diverse range of in-game scenarios. This data is then utilized to train and refine the models, making them adept at recognizing and interpreting various game elements with high accuracy.
+The data acquisition process systematically captures screenshots from the game environment using two specialized scripts [*ss.py*](TF%20Model\Data\ss.py). The script is meticulously designed to automate the screenshot-capturing process, ensuring the data reflects a diverse range of in-game scenarios. This data is then utilized to train and refine the models, making them adept at recognizing and interpreting various game elements with high accuracy.
 
 ### Labeling
 
-The labeling of the captured data is a critical step in preparing it for machine learning applications. This process is carried out using the [**LabelImg**](https://github.com/HumanSignal/labelImg) application, a robust tool for annotating images with precise bounding boxes. By accurately labeling each object within the game screenshots, we ensure that the model can effectively learn to differentiate between various elements, such as enemies, obstacles, and key items. The quality of this labeling process directly impacts the performance and reliability of the trained models.
+The labelling of the captured data is a critical step in preparing it for machine learning applications. This process uses the [**LabelImg**](https://github.com/HumanSignal/labelImg) application, a robust tool for annotating images with precise bounding boxes. By accurately labelling each object within the game screenshots, we ensure that the model can effectively learn to differentiate between various elements, such as enemies, obstacles, and key items. The quality of this labelling process directly impacts the performance and reliability of the trained models.
 
 The labels of the models can be found in the *Model* folders in [*TF Model*](TF%20Model) or [*YOLO Model*](YOLO%20Model).
 
@@ -78,7 +78,7 @@ To effectively navigate and visit different dungeon rooms, the system must maint
 
 ### Fighting
 
-The combat system is designed to adapt to different enemy types, focusing on dodging ranged attacks while maintaining a safe distance from melee attackers. The player is programmed to keep the mouse cursor trained on the nearest enemy, continuously holding down the left mouse button to attack. This straightforward combat approach not changes a lot when the player enters a boss dungeon room, however the challenges escalate. Although the current plan provides a solid foundation, there may be still many aspects of the combat system that need to be refined and expanded as the project progresses.
+The combat system is designed to adapt to different enemy types, focusing on dodging ranged attacks while maintaining a safe distance from melee attackers. The player is programmed to keep the mouse cursor trained on the nearest enemy, continuously holding down the left mouse button to attack. This straightforward combat approach does not change a lot when the player enters a boss dungeon room, however, the challenges escalate. Although the current plan provides a solid foundation, there may be still many aspects of the combat system that need to be refined and expanded as the project progresses.
 
 ## Yolov8
 
@@ -86,7 +86,7 @@ The combat system is designed to adapt to different enemy types, focusing on dod
 
 #### 1. Cuda and cuDNN
 
-See [Insatallation of Cuda Toolkit and cuDNN](#insatallation-of-cuda-toolkit-and-cudnn). Foloow the instructions and isnstall CUDA 11.8 and cuDNN v8.9.7 (December 5th, 2023), for CUDA 11.x.
+See [Insatallation of Cuda Toolkit and cuDNN](#insatallation-of-cuda-toolkit-and-cudnn). Follow the instructions and install CUDA 11.8 and cuDNN v8.9.7 (December 5th, 2023), for CUDA 11.x.
 
 #### 2. Anaconda Environment
 
@@ -119,7 +119,7 @@ Activate environment:
 
 **Custom Object Detection Test Model**
 
-The train script is taken from [colab](https://colab.research.google.com/github/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Train_TFLite2_Object_Detction_Model.ipynb). See [here](https://www.youtube.com/watch?v=XZ7FYAMCc4M&t=311s) for the Youtube Video.
+The training script is taken from [colab](https://colab.research.google.com/github/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Train_TFLite2_Object_Detction_Model.ipynb). See [here](https://www.youtube.com/watch?v=XZ7FYAMCc4M&t=311s) for the Youtube Video.
 
 The data is taken using [LabelImg](https://github.com/HumanSignal/labelImg).
 The test model [test_0](TF%20Model\Model\test_0) is trained with 183 images. Images and XML files can be found at [**Data**](Data).
@@ -135,7 +135,7 @@ The test model [test_0](TF%20Model\Model\test_0) is trained with 183 images. Ima
 
 #### 1. Cuda Toolkit and cuDNN
 
-See [Insatallation of Cuda Toolkit and cuDNN](#insatallation-of-cuda-toolkit-and-cudnn). Foloow the instructions and isnstall CUDA 11.3 and cuDNN v8.2 or v8.0 (December 5th, 2023), for CUDA 11.x.
+See [Insatallation of Cuda Toolkit and cuDNN](#insatallation-of-cuda-toolkit-and-cudnn). Follow the instructions and install CUDA 11.3 and cuDNN v8.2 or v8.0 (December 5th, 2023), for CUDA 11.x.
 
 #### 2. Anaconda Environment
 
@@ -195,8 +195,8 @@ Create a .py file with the following code and the name ***use_protobuf.py***:
         if file.endswith(".proto):
             os.systems(protoc_path+" "+directory+"/"+"file+" __python_out=.")
 ```
-Locate file to the /path/TF2/models/research.
-Run script from Command Prompt:
+Locate the file to the /path/TF2/models/research.
+Run the script from the Command Prompt:
 ```
     python use_protobuf.py object_detection/protos protoc
 ```
@@ -225,16 +225,16 @@ Open Command Prompt with the path /path/TF2/models/research and type:
 
 ## Yolov7
 
-I conducted a series of tests comparing YOLO and TensorFlow Lite (TF Lite) models using the same randomly mixed image data and labels. The objective was to evaluate both models' performance in terms of accuracy and real-time latency. Although YOLO showed better accuracy in object detection, I encountered significant challenges with system performance while using it. Specifically, the YOLO model caused my older desktop computer to slow down drastically, making it nearly impossible to obtain results in real-time.
+I conducted a series of tests comparing YOLO and TensorFlow Lite (TF Lite) models using the same randomly mixed image data and labels. The objective was to evaluate both models' performance in terms of accuracy and real-time latency. Although YOLO showed better accuracy in object detection, I encountered significant challenges with system performance while using it. Specifically, the YOLO model caused my older desktop computer to slow down drastically, making it nearly impossible to obtain results in real time.
 
 *In addition, deploying models on a cloud service and obtaining detection results via an API will be considered and tested as a potential solution to address performance concerns and further optimize results.*
 
 
 ## Helpers
 
-### Insatallation of Cuda Toolkit and cuDNN
+### Installation of Cuda Toolkit and cuDNN
 
-Follow the instructions for the insatallation of Cuda Toolkit *vX.Y* and cuDNN *vA.B.C*.
+Follow the instructions for the installation of Cuda Toolkit *vX.Y* and cuDNN *vA.B.C*.
 
 #### 1.1 Cuda Installation
 
