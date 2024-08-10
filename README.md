@@ -30,13 +30,10 @@ For detailed changes, see the [release notes](https://github.com/yourusername/yo
   - [Mapping](#mapping)
   - [Fighting](#fighting)
 - [Yolov8](#yolov8)
+  - [Installation for Windows](#installation-windows-yolo)
 - [TF Lite Model](#tf-lite-model)
   - [Object Detection](#object-detection-tf)
-  - [Installation of TF Lite for Windows](#installation-of-tf-lite-for-windows)
-    - [1. Cuda Toolkit and cuDNN](#1-cuda-toolkit-and-cudnn)
-    - [2. Anaconda Environment](#2-anaconda-environment)
-    - [3. Install Dependencies](#3-install-dependencies)
-    - [4. Install TF-Lite API](#4-install-tf-lite-api)
+  - [Installation for Windows](#installation-windows-tf)
 - [Yolov7](#yolov7)
 - [Helpers](#helpers)
   - [Insatallation of Cuda Toolkit and cuDNN](#insatallation-of-cuda-toolkit-and-cudnn)
@@ -82,7 +79,7 @@ The combat system is designed to adapt to different enemy types, focusing on dod
 
 ## Yolov8
 
-### Installation
+### <a name="installation-windows-yolo">Installation for Windows</a>
 
 #### 1. Cuda and cuDNN
 
@@ -131,7 +128,7 @@ The test model [test_0](TF%20Model\Model\test_0) is trained with 183 images. Ima
   <img src="Docs\object_0 .png" alt="object_0" width="400"/>
 </p>
 
-### Installation of TF Lite for Windows
+### <a name="installation-windows-tf">Installation for Windows</a>
 
 #### 1. Cuda Toolkit and cuDNN
 
