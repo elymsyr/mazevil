@@ -31,7 +31,8 @@ def downscale_binary_array(big_array, block_size):
 
 def path_detection(rgb, lower_bound = np.array([100, 50, 50]), upper_bound = np.array([255, 150, 150])):
     mask = cv2.inRange(rgb, lower_bound, upper_bound)
-    return (mask > 0).astype(np.uint8)
+    mask = (mask > 0).astype(np.uint8)
+    return np.stack([mask, mask, mask], axis=-1) * 255
 
 def path_detection_older_version(rgb, downscale_order = [9,3], lower_bound = np.array([100, 50, 50]), upper_bound = np.array([255, 150, 150])):
     mask = cv2.inRange(rgb, lower_bound, upper_bound)

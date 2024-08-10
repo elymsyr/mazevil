@@ -25,10 +25,10 @@ def move_files(model = 'TestModel001', val_size = 0.2, zip = False):
     labeled = "YOLO Model\\Data\\Labeled Images"
     images = "YOLO Model\\Data\\Images"
     processed_images = "YOLO Model\\Data\\Processed Images"
-    train = f"YOLO Model\\Model\\{model}\\train"
-    val = f"YOLO Model\\Model\\{model}\\val"
+    train = f"YOLO Model\\Data\\{model}\\train"
+    val = f"YOLO Model\\Data\\{model}\\val"
     
-    folder_system = [f"YOLO Model\\Model\\{model}", f"{train}\\images", f"{train}\\labels", f"{val}\\images", f"{val}\\labels", processed_images]
+    folder_system = [f"YOLO Model\\Data\\{model}", f"{train}\\images", f"{train}\\labels", f"{val}\\images", f"{val}\\labels", processed_images]
     
     for folder in folder_system:
         os.makedirs(folder, exist_ok=True)
@@ -75,7 +75,7 @@ def move_files(model = 'TestModel001', val_size = 0.2, zip = False):
         
     print(f"Total {count} txt files moved.\n")
     
-    shutil.copy(os.path.join(labeled, "classes.txt"), f"YOLO Model\\Model\\{model}")
+    shutil.copy(os.path.join(labeled, "classes.txt"), f"YOLO Model\\Data\\{model}")
 
     map = {
        'train': {'images': [f for f in os.listdir(f"{train}\\images") if f.endswith('.png')], 'labels': [f for f in os.listdir(f"{train}\\labels") if f.endswith('.txt')]},
@@ -87,4 +87,8 @@ def move_files(model = 'TestModel001', val_size = 0.2, zip = False):
         for subkey, subvalue in value.items():
             print(f"    {subkey} - {len(subvalue)}")
             
-    if zip: zip_folder(f"YOLO Model\\Model\\{model}", f'YOLO Model\\Model\\yolo_data_{model.lower()}')
+    if zip: zip_folder(f"YOLO Model\\Data\\{model}", f'YOLO Model\\Data\\{model}\\yolo_data_{model.lower()}')
+
+model = 'test_0'
+zip = True
+move_files(model=model, zip=zip)
