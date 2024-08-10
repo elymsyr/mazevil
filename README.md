@@ -29,6 +29,7 @@ For detailed changes, see the [release notes](https://github.com/yourusername/yo
   - [Traversing](#traversing)
   - [Mapping](#mapping)
   - [Fighting](#fighting)
+- [Yolov8](#yolov8)
 - [TF Lite Model](#tf-lite-model)
   - [Object Detection](#object-detection-tf)
   - [Installation of TF Lite for Windows](#installation-of-tf-lite-for-windows)
@@ -36,7 +37,8 @@ For detailed changes, see the [release notes](https://github.com/yourusername/yo
     - [2. Anaconda Environment](#2-anaconda-environment)
     - [3. Install Dependencies](#3-install-dependencies)
     - [4. Install TF-Lite API](#4-install-tf-lite-api)
-- [YOLO Model](#yolo-model)    
+- [Yolov7](#yolov7)
+- [Helpers](#helpers)
 - [License](#license)
 
 ## Contributing
@@ -77,6 +79,43 @@ To effectively navigate and visit different dungeon rooms, the system must maint
 
 The combat system is designed to adapt to different enemy types, focusing on dodging ranged attacks while maintaining a safe distance from melee attackers. The player is programmed to keep the mouse cursor trained on the nearest enemy, continuously holding down the left mouse button to attack. This straightforward combat approach not changes a lot when the player enters a boss dungeon room, however the challenges escalate. Although the current plan provides a solid foundation, there may be still many aspects of the combat system that need to be refined and expanded as the project progresses.
 
+## Yolov8
+
+### Installation
+
+#### 1. Cuda and cuDNN
+
+See [Insatallation for Cuda Toolkit vX.Y and cuDNN vA.B.C](#insatallation-for-cuda-toolkit-vx.y-and-cudnn-va.b.c). Foloow the instructions and isnstall CUDA 11.8 and cuDNN v8.9.7 (December 5th, 2023), for CUDA 11.x.
+
+#### 2. Anaconda Environment
+
+Create an Anaconda venv with the *python version 3.9*:
+```
+    conda create -n {envname} python=3.9
+```
+Activate environment:
+```
+    conda activate {envname}
+```
+
+#### 3. Install Dependicies
+
+```
+    conda install cudatoolkit=X.Y cudnn=x.x
+```
+**or**
+```
+    conda install cudatoolkit=X.Y cudnn=x.x
+```
+**and**
+```
+    pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+```
+```
+    pip install ultralytics
+```
+
+
 ## TF Lite Model
 
 ### <a name="object-detection-tf">Object Detection</a>
@@ -99,25 +138,7 @@ The test model [test_0](TF%20Model\Model\test_0) is trained with 183 images. Ima
 
 #### 1. Cuda Toolkit and cuDNN
 
-##### 1.1 Cuda Installation
-
-Download and install version 11.3 of [Cuda Toolkit](https://developer.nvidia.com/cuda-11.3.0-download-archive) from [https://developer.nvidia.com/cuda-11.3.0-download-archive](https://developer.nvidia.com/cuda-11.3.0-download-archive).
-
-##### 1.2 cuDNN Installation
-
-Download cuDNN v8.2.0 (April 23rd, 2021), for CUDA 11.x from [https://developer.nvidia.com/rdp/cudnn-archive](https://developer.nvidia.com/rdp/cudnn-archive).
-
- - Copy the contents of the bin folder from the cuDNN archive to the **C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.0\bin** directory.
- - Copy the contents of the included folder to the **C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.0\include** directory.
- - Copy the contents of the lib folder to the **C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.0\lib\x64** directory.
-
-##### 1.3 Update Environment Variables
-
- - Open the Start Menu and search for "Environment Variables."
- - Click "Edit the system environment variables."
- - Click the "Environment Variables" button in the System Properties window.
- - In the Environment Variables window, find the Path variable under "System variables," select it, and click "Edit."
- - Add **C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.0\bin** to the list if it’s not already there.
+See [Insatallation for Cuda Toolkit vX.Y and cuDNN vA.B.C](#insatallation-for-cuda-toolkit-vx.y-and-cudnn-va.b.c). Foloow the instructions and isnstall CUDA 11.3 and cuDNN v8.2 or v8.0 (December 5th, 2023), for CUDA 11.x.
 
 #### 2. Anaconda Environment
 
@@ -203,11 +224,54 @@ Open Command Prompt with the path /path/TF2/models/research and type:
     python objet_detection/builders/model_builder_tf2_test.py
 ```
 
-## YOLO Model
+
+
+## Yolov7
 
 I conducted a series of tests comparing YOLO and TensorFlow Lite (TF Lite) models using the same randomly mixed image data and labels. The objective was to evaluate both models' performance in terms of accuracy and real-time latency. Although YOLO showed better accuracy in object detection, I encountered significant challenges with system performance while using it. Specifically, the YOLO model caused my older desktop computer to slow down drastically, making it nearly impossible to obtain results in real-time.
 
 *In addition, deploying models on a cloud service and obtaining detection results via an API will be considered and tested as a potential solution to address performance concerns and further optimize results.*
+
+
+## Helpers
+
+### Insatallation for Cuda Toolkit vX.Y and cuDNN vA.B.C
+
+#### 1.1 Cuda Installation
+
+Download and install [Cuda Toolkit](https://developer.nvidia.com/cuda-toolkit-archive) from [https://developer.nvidia.com/cuda-toolkit-archive](https://developer.nvidia.com/cuda-toolkit-archive).
+
+#### 1.2 cuDNN Installation
+
+Download cuDNN vA.B.C, for CUDA X.x from [https://developer.nvidia.com/rdp/cudnn-archive](https://developer.nvidia.com/rdp/cudnn-archive).
+
+ - Copy the contents of the bin folder from the cuDNN archive to the **C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\vX.Y\bin** directory.
+ - Copy the contents of the included folder to the **C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\vX.Y\include** directory.
+ - Copy the contents of the lib/x64 folder to the **C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\vX.Y\lib\x64** directory.
+
+#### 1.3 Update Environment Variables
+
+ - Open the Start Menu and search for "Environment Variables."
+ - Click "Edit the system environment variables."
+ - Click the "Environment Variables" button in the System Properties window.
+ - Create a new variable under "System variables", with the following values:
+  - Var name: *CUDNN*
+  - Var value: *C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\vX.Y\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\vX.Y\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\vX.Y\lib*
+
+#### Test Installation
+
+Run on python:
+```
+import torch
+print(torch.cuda.is_available())
+print(torch.cuda.current_device())
+print(torch.cuda.device_count())
+print(torch.cuda.get_device_name(0))
+```
+Run on Command Prompt or Powershell:
+```
+C:\> nvcc --version
+```
 
 ## License
 
