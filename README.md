@@ -227,6 +227,8 @@ Open Command Prompt with the path /path/TF2/models/research and type:
 
 I conducted a series of tests comparing YOLO and TensorFlow Lite (TF Lite) models using the same randomly mixed image data and labels. The objective was to evaluate both models' performance in terms of accuracy and real-time latency. Although YOLO showed better accuracy in object detection, I encountered significant challenges with system performance while using it. Specifically, the YOLO model caused my older desktop computer to slow down drastically, making it nearly impossible to obtain results in real time.
 
+So, I decided to try the yolov8 model or continue with the TF Lite model, instead of the insufficient documentation and complexity of yolov7 compared to yolov8.
+
 *In addition, deploying models on a cloud service and obtaining detection results via an API will be considered and tested as a potential solution to address performance concerns and further optimize results.*
 
 
