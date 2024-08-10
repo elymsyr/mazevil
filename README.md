@@ -11,6 +11,15 @@ A free demo version of the **Mazevil** game can be found at [Itch.io](https://sp
 
 *Paths in [Test Scripts](Test%20Scripts) may need to be updated.*
 
+## Latest Updates
+
+**Commit (3fa2674):** All the files and folders of yolov7 model is now moved into the folder [yolov7](). I have decided to train a new model using yolov8.
+
+<!-- - **Release:** v1.2.3 (Released on 2024-08-10)
+- **Commit:** 1a2b3c4d5e6f7g8h9i0j (2024-08-10) -->
+
+For detailed changes, see the [release notes](https://github.com/yourusername/yourrepo/releases/) or the [commit history](https://github.com/yourusername/yourrepo/commits/main).
+
 ## Table of Contents
 - [Contributing](#contributing)
 - [Data Preparation](#data-preparation)
@@ -199,8 +208,6 @@ Open Command Prompt with the path /path/TF2/models/research and type:
 I conducted a series of tests comparing YOLO and TensorFlow Lite (TF Lite) models using the same randomly mixed image data and labels. The objective was to evaluate both models' performance in terms of accuracy and real-time latency. Although YOLO showed better accuracy in object detection, I encountered significant challenges with system performance while using it. Specifically, the YOLO model caused my older desktop computer to slow down drastically, making it nearly impossible to obtain results in real-time.
 
 *In addition, deploying models on a cloud service and obtaining detection results via an API will be considered and tested as a potential solution to address performance concerns and further optimize results.*
-
-*Update: All the files and folders of yolov7 model is now moved into the folder [yolov7](). I have decided to train a new model using yolov8.*
 
 ## License
 
