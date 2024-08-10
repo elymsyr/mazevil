@@ -39,6 +39,7 @@ For detailed changes, see the [release notes](https://github.com/yourusername/yo
     - [4. Install TF-Lite API](#4-install-tf-lite-api)
 - [Yolov7](#yolov7)
 - [Helpers](#helpers)
+  - [Insatallation of Cuda Toolkit and cuDNN](#insatallation-of-cuda-toolkit-and-cudnn)
 - [License](#license)
 
 ## Contributing
@@ -85,7 +86,7 @@ The combat system is designed to adapt to different enemy types, focusing on dod
 
 #### 1. Cuda and cuDNN
 
-See [Insatallation for Cuda Toolkit vX.Y and cuDNN vA.B.C](#insatallation-for-cuda-toolkit-vx.y-and-cudnn-va.b.c). Foloow the instructions and isnstall CUDA 11.8 and cuDNN v8.9.7 (December 5th, 2023), for CUDA 11.x.
+See [Insatallation of Cuda Toolkit and cuDNN](#insatallation-of-cuda-toolkit-and-cudnn). Foloow the instructions and isnstall CUDA 11.8 and cuDNN v8.9.7 (December 5th, 2023), for CUDA 11.x.
 
 #### 2. Anaconda Environment
 
@@ -100,10 +101,6 @@ Activate environment:
 
 #### 3. Install Dependicies
 
-```
-    conda install cudatoolkit=X.Y cudnn=x.x
-```
-**or**
 ```
     conda install cudatoolkit=X.Y cudnn=x.x
 ```
@@ -138,7 +135,7 @@ The test model [test_0](TF%20Model\Model\test_0) is trained with 183 images. Ima
 
 #### 1. Cuda Toolkit and cuDNN
 
-See [Insatallation for Cuda Toolkit vX.Y and cuDNN vA.B.C](#insatallation-for-cuda-toolkit-vx.y-and-cudnn-va.b.c). Foloow the instructions and isnstall CUDA 11.3 and cuDNN v8.2 or v8.0 (December 5th, 2023), for CUDA 11.x.
+See [Insatallation of Cuda Toolkit and cuDNN](#insatallation-of-cuda-toolkit-and-cudnn). Foloow the instructions and isnstall CUDA 11.3 and cuDNN v8.2 or v8.0 (December 5th, 2023), for CUDA 11.x.
 
 #### 2. Anaconda Environment
 
@@ -235,7 +232,9 @@ I conducted a series of tests comparing YOLO and TensorFlow Lite (TF Lite) model
 
 ## Helpers
 
-### Insatallation for Cuda Toolkit vX.Y and cuDNN vA.B.C
+### Insatallation of Cuda Toolkit and cuDNN
+
+Follow the instructions for the insatallation of Cuda Toolkit *vX.Y* and cuDNN *vA.B.C*.
 
 #### 1.1 Cuda Installation
 
