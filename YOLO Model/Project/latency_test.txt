@@ -70,3 +70,39 @@ model_detect: True
 scale_order: [4, 4]
   fps: 17.686 max(22.4300) min(0.014)  path: 0.014 max(0.0188) min(0.013)  detect: 0.001 max(0.2733) min(0.000)  draw: 0.022 max(0.0881) min(0.017)
 
+  -- TEST_1 --  
+imgsz: 480
+draw: False
+show_result: False
+path: False
+model_detect: True
+scale_order: [4, 4]
+  fps: 59.797 max(79.9329) min(0.119)  detect: 0.006 max(1.7647) min(0.001)
+
+  -- TEST_1 --  
+imgsz: 480
+draw: False
+show_result: False
+path: True
+model_detect: True
+scale_order: []
+  fps: 51.000 max(54.6418) min(0.065)  path: 0.007 max(0.0298) min(0.006)  detect: 0.001 max(0.1949) min(0.001)
+
+  -- TEST_1 --  
+imgsz: 480
+draw: True
+show_result: True
+path: True
+model_detect: True
+scale_order: []
+  fps: 20.819 max(27.8256) min(0.046)  path: 0.007 max(0.0217) min(0.006)  detect: 0.002 max(0.4458) min(0.000)  draw: 0.025 max(1.8310) min(0.014)
+
+  -- TEST_1 --  
+imgsz: 480
+draw: True
+show_result: True
+path: True
+model_detect: True
+scale_order: [4, 4]
+  fps: 18.139 max(22.2228) min(0.026)  path: 0.014 max(0.0277) min(0.013)  detect: 0.001 max(0.2038) min(0.000)  draw: 0.021 max(0.0465) min(0.017)
+

@@ -84,9 +84,10 @@ def window_dxcam(model_path: str, draw: bool = True, imgsz: int = 480, show_resu
     del cam
     return path_list if path_list else None , draw_list if draw_list else None , detection_list if detection_list else None , fps_list if fps_list else None 
 
-model_name = 'test_0'
+model_name = 'test_1'
 
 model_path = f'YOLO Model\\Model\\Trained Models\\{model_name}\\train\\weights\\best.pt'
+
 
 conf1 = {
     'model_path': model_path,
@@ -94,7 +95,7 @@ conf1 = {
     'draw' : False,
     'show_result' : False,
     'path' : False,
-    'model_detect': False,
+    'model_detect': True,
     'scale_order' : [4,4]
 }
 
@@ -102,55 +103,15 @@ conf2 = {
     'model_path': model_path,
     'imgsz': 480,
     'draw' : False,
-    'show_result' : True,
-    'path' : False,
-    'model_detect': False,
-    'scale_order' : [4,4]
+    'show_result' : False,
+    'path' : True,
+    'model_detect': True,
+    'scale_order' : []
 }
 
 conf3 = {
     'model_path': model_path,
     'imgsz': 480,
-    'draw' : False,
-    'show_result' : False,
-    'path' : False,
-    'model_detect': True,
-    'scale_order' : [4,4]
-}
-
-conf4 = {
-    'model_path': model_path,
-    'imgsz': 480,
-    'draw' : True,
-    'show_result' : False,
-    'path' : False,
-    'model_detect': True,
-    'scale_order' : [4,4]
-}
-
-conf5 = {
-    'model_path': model_path,
-    'imgsz': 480,
-    'draw' : True,
-    'show_result' : False,
-    'path' : True,
-    'model_detect': True,
-    'scale_order' : [4,4]
-}
-
-conf6 = {
-    'model_path': model_path,
-    'imgsz': 480,
-    'draw' : True,
-    'show_result' : False,
-    'path' : True,
-    'model_detect': True,
-    'scale_order' : []
-}
-
-conf7 = {
-    'model_path': model_path,
-    'imgsz': 480,
     'draw' : True,
     'show_result' : True,
     'path' : True,
@@ -158,7 +119,7 @@ conf7 = {
     'scale_order' : []
 }
 
-conf8 = {
+conf4 = {
     'model_path': model_path,
     'imgsz': 480,
     'draw' : True,
@@ -187,8 +148,8 @@ def try_conf(conf):
         if detect: file.writelines(f"  {t2}")
         if draw: file.writelines(f"  {t3}")
         file.writelines('\n\n')
-        
+
     print('DONE')
-    
-for conf in [conf1, conf2, conf3, conf4, conf5, conf6, conf7, conf8]:
+
+for conf in [conf1, conf2, conf3, conf4]:
     try_conf(conf=conf)
