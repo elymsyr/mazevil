@@ -10,7 +10,3 @@ ov_model = YOLO('yolov8n_openvine_model/')
 results_ov = ov_model('YOLO Model\\Data\\Test\\screenshot_411.png')
 
 results_original = model('YOLO Model\\Data\\Test\\screenshot_411.png')
-
-cv2.imshow('results_ov', results_ov)
-cv2.imshow('results_original', results_original)
-if cv2.waitKey(10000) & 0xFF == ord('q'): cv2.destroyAllWindows()
