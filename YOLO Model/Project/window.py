@@ -68,7 +68,7 @@ def window_dxcam(model_path: str, draw: bool = True, imgsz: int = 480, show_resu
     cv2.destroyAllWindows()
     del cam
 
-model_name = 'test_0'
+model_name = 'test_1'
 
 model_path = f'YOLO Model\\Model\\Trained Models\\{model_name}\\train\\weights\\best.pt'
 
@@ -77,7 +77,7 @@ conf = {
     'draw' : True,
     'imgsz': 480,
     'show_result' : True,
-    'path' : True,
+    'path' : False,
     'model_detect': True,
     'scale_order' : [4,4],
     'min_conf' : 0.4,
