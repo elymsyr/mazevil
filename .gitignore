@@ -4,6 +4,8 @@ Mazevil/
 LabelImg/
 
 */Data/Images
+*/Data/Test
+*/Data/Train
 */Data/Labeled\ Images
 */Model/Trained\ Models
 */Model/yolov7/

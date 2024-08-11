@@ -1,4 +1,4 @@
-import os, shutil, math, random
+import os, shutil, math, random, yaml
 
 def zip_folder(folder_path, output_path, delete = False):
     shutil.make_archive(output_path, 'zip', folder_path)
@@ -21,7 +21,7 @@ def split_list_fraction(input_list, fraction1):
     
     return piece1, piece2
 
-def move_files(model = 'TestModel001', val_size = 0.2, zip = False):
+def move_files(model = 'TestModel001', val_size = 0.2, zip = False, delete=False):
     labeled = "YOLO Model\\Data\\Labeled Images"
     images = "YOLO Model\\Data\\Images"
     processed_images = "YOLO Model\\Data\\Processed Images"
@@ -87,8 +87,26 @@ def move_files(model = 'TestModel001', val_size = 0.2, zip = False):
         for subkey, subvalue in value.items():
             print(f"    {subkey} - {len(subvalue)}")
             
-    if zip: zip_folder(f"YOLO Model\\Data\\{model}", f'YOLO Model\\Data\\{model}\\yolo_data_{model.lower()}')
+    with open(f'{labeled}\\classes.txt', 'r') as file:
+        class_names = [line.strip() for line in file.readlines()]
 
-model = 'test_0'
+    nc = len(class_names)
+            
+    config = {
+    'names': class_names,  # list of class names
+    'nc': nc,  # number of classes
+    'val': f"/content/images/val",  # path to validation dataset
+    'train': f"/content/images/train",  # path to training dataset
+    }
+
+    # Save the configuration to a YAML file
+    with open(f'YOLO Model\\Data\\{model}\\custom_data.yaml', 'w') as file:
+        yaml.safe_dump(config, file)
+            
+    if zip: zip_folder(f"YOLO Model\\Data\\{model}", f'YOLO Model\\Model\\Trained Models\\{model}\\images', delete=delete)
+
+    shutil.move(f'YOLO Model\\Data\\{model}', f'YOLO Model\\Data\\Train\\{model}')
+
+model = 'yolov8_test_0'
 zip = True
 move_files(model=model, zip=zip)
