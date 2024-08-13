@@ -6,13 +6,13 @@ import numpy as np
 def path_detection(boxes, rgb, lower_bound = np.array([100, 50, 50]), upper_bound = np.array([255, 150, 150])):
     mask = cv2.inRange(rgb, lower_bound, upper_bound)
     masked_cleared = (mask > 0).astype(np.uint8)
-    
     window_image = np.stack([masked_cleared, masked_cleared, masked_cleared], axis=-1) * 255   
-    height, width = window_image.shape[:2]
     for box in boxes:
         cv2.rectangle(img=window_image, **box)
-    image = cv2.floodFill(window_image, None, (int(width/2), int(height/2)), (256, 0, 0))[1]
-    return image
+    height, width = window_image.shape[:2]
+    window_image = cv2.floodFill(window_image, None, (int(width/2), int(height/2+30)), (256, 0, 0))[1]
+    window_image = cv2.circle(window_image, (int(width/2), int(height/2+30)), 1, (0, 0, 256))
+    return window_image
 
 def window_dxcam(model_path: str, draw: bool = True, imgsz: int = 480, show_result:bool = True, path: bool = True, model_detect: bool = True, scale_order: list = [4], min_conf: float = 0.4, window_title = 'Mazevil', lower_bound = np.array([100, 50, 50]), upper_bound = np.array([255, 150, 150])):
     lower_bound = np.array([24,20,37]) # 100, 50, 50
@@ -58,7 +58,7 @@ def window_dxcam(model_path: str, draw: bool = True, imgsz: int = 480, show_resu
                                 elif int(class_id) == 3: # trap on
                                     color = (0, 0, 256)
                                 else: continue
-                                boxes.append({"pt1": (x1, y1),"pt2": (x2, y2),"color": color,"thickness": -1})
+                                boxes.append({"pt1": (x1-2, y1),"pt2": (x2+2, y2+2),"color": color,"thickness": -1})
                     window_image = path_detection(boxes = boxes, rgb=cv2.cvtColor(window_image, cv2.COLOR_BGR2RGB), lower_bound=lower_bound, upper_bound=upper_bound)
                 if draw:
                     for result in results:
