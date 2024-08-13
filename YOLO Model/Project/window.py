@@ -1,18 +1,31 @@
 import time
-import dxcam, cv2, win32gui
+import dxcam, cv2, win32gui, win32api, win32con
 from ultralytics import YOLO
 import numpy as np
 
-def path_detection(boxes, rgb, lower_bound = np.array([100, 50, 50]), upper_bound = np.array([255, 150, 150])):
+CLICKED = False
+
+def euclidean_distance(p1, p2):
+    return np.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+
+def path_detection(center, boxes, rgb, lower_bound = np.array([100, 50, 50]), upper_bound = np.array([255, 150, 150])):
     mask = cv2.inRange(rgb, lower_bound, upper_bound)
     masked_cleared = (mask > 0).astype(np.uint8)
     window_image = np.stack([masked_cleared, masked_cleared, masked_cleared], axis=-1) * 255   
     for box in boxes:
         cv2.rectangle(img=window_image, **box)
-    height, width = window_image.shape[:2]
-    window_image = cv2.floodFill(window_image, None, (int(width/2), int(height/2+30)), (256, 0, 0))[1]
-    window_image = cv2.circle(window_image, (int(width/2), int(height/2+30)), 1, (0, 0, 256))
+    window_image = cv2.floodFill(window_image, None, center, (256, 0, 0))[1]
+    window_image = cv2.circle(window_image, center, 1, (0, 0, 256))
     return window_image
+
+def enemy_found(enemies, window_x, window_y):
+    global CLICKED
+    choosen_enemy = enemies[0]
+    screen_x = choosen_enemy[0]+window_x+8
+    screen_y = choosen_enemy[1]+window_y+54
+    win32api.SetCursorPos((screen_x, screen_y))
+    if not CLICKED: win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, screen_x, screen_y, 0, 0)
+    CLICKED = True
 
 def window_dxcam(model_path: str, draw: bool = True, imgsz: int = 480, show_result:bool = True, path: bool = True, model_detect: bool = True, scale_order: list = [4], min_conf: float = 0.4, window_title = 'Mazevil', lower_bound = np.array([100, 50, 50]), upper_bound = np.array([255, 150, 150])):
     lower_bound = np.array([24,20,37]) # 100, 50, 50
@@ -21,15 +34,22 @@ def window_dxcam(model_path: str, draw: bool = True, imgsz: int = 480, show_resu
     model = YOLO(model_path)
 
     hwnd = win32gui.FindWindow(None, window_title)
+    window_rect = win32gui.GetWindowRect(hwnd)
+    window_x = window_rect[0]
+    window_y = window_rect[1]
+    max_distance = 500
     cam = dxcam.create(output_color="BGR")
     left, top, right, bottom = win32gui.GetWindowRect(hwnd)
-
+    top_offset, bottom_offset = 50, 58
+    window_image = cam.grab(region=(left+8, top+top_offset, right-8, bottom-bottom_offset))
+    height, width = window_image.shape[:2]
+    center = (int(width/2), int(height/2+30))
     fps_list = []
     prevTime = 0
     fps = 0
     
     while True:
-        
+        global CLICKED
         left, top, right, bottom = win32gui.GetWindowRect(hwnd)
         top_offset, bottom_offset = 50, 58
         window_image = cam.grab(region=(left+8, top+top_offset, right-8, bottom-bottom_offset))
@@ -42,24 +62,43 @@ def window_dxcam(model_path: str, draw: bool = True, imgsz: int = 480, show_resu
             prevTime = currTime
 
             if model_detect: 
-                results = model(classes=[0,1,2,3,4,5,7,8,9,10,11,12,13,14],device=0,source=window_image, conf=min_conf, imgsz=imgsz, stream=True, verbose=False)
-                if path: 
+                results = model(classes=[0,1,2,3,4,5,7,9,10,11,12,13,14],device=0,source=window_image, conf=min_conf, imgsz=imgsz, stream=True, verbose=False)
+                if path:
+                    enemy = [] 
                     boxes = []
+                    rewards = []
                     for result in results:
                         # Calculate the top-left corner of the bounding box
                         for box in result.boxes:
                             # Extract bounding box coordinates and other information
                             x1, y1, x2, y2 = map(int, box.xyxy[0])
+                            x, y, *_ = map(int, box.xywh[0])
                             confidence = box.conf
                             if confidence > min_conf:
                                 class_id = box.cls
                                 if int(class_id) == 2: # trap off
                                     color = (0, 0, 0)
+                                    boxes.append({"pt1": (x1-2, y1),"pt2": (x2+2, y2+2),"color": color,"thickness": -1})
                                 elif int(class_id) == 3: # trap on
                                     color = (0, 0, 256)
+                                    boxes.append({"pt1": (x1-2, y1),"pt2": (x2+2, y2+2),"color": color,"thickness": -1})
+                                elif int(class_id) in [0,1,4,12,14]:
+                                    enemy.append((x,y))
+                                elif int(class_id) in [7,9,10,11,13]:
+                                    rewards.append((x,y, int(class_id)))
                                 else: continue
-                                boxes.append({"pt1": (x1-2, y1),"pt2": (x2+2, y2+2),"color": color,"thickness": -1})
-                    window_image = path_detection(boxes = boxes, rgb=cv2.cvtColor(window_image, cv2.COLOR_BGR2RGB), lower_bound=lower_bound, upper_bound=upper_bound)
+                    window_image = path_detection(center=center, boxes = boxes, rgb=cv2.cvtColor(window_image, cv2.COLOR_BGR2RGB), lower_bound=lower_bound, upper_bound=upper_bound)
+                    enemies = sorted(
+                        [point for point in enemy if euclidean_distance(point, center) <= max_distance],
+                        key=lambda point: euclidean_distance(point, center)
+                    )
+                    if enemies:
+                        enemy_found(enemies=enemies, window_x=window_x, window_y=window_y)
+                        for enemy in enemies:
+                            window_image = cv2.circle(window_image, enemy, 3, (0, 0, 256))
+                    elif CLICKED:
+                        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, window_x, window_y, 0, 0)
+                        CLICKED = False
                 if draw:
                     for result in results:
                         window_image = result.plot(img = window_image)
