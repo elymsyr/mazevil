@@ -1,10 +1,9 @@
-import time
-import dxcam, cv2, win32gui, win32api, win32con
+import dxcam, cv2, win32gui, win32api, win32con, time, heapq
 from ultralytics import YOLO
 import numpy as np
 
 
-class Mazevil(object):
+class Mazevil():
     def __init__(self, model_path, window_title = 'Mazevil'):
         self.window_title = window_title
         self.CLICKED = False
@@ -165,10 +164,71 @@ class Mazevil(object):
                     if cv2.waitKey(1) & 0xFF == ord('q'):
                         break
         
-        cv2.destroyAllWindows()
-        del self.cam
         print(sum(self.fps_list)/len(self.fps_list))
+        cv2.destroyAllWindows()
 
+class GreedyBFS():
+    def __init__(self):
+        pass
+    
+    def heuristic(self, a, b):
+        """Calculate the Euclidean distance between points a and b."""
+        return np.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
+
+    def greedy_best_first_search(self, grid, start, goal):
+        """Perform Greedy Best-First Search on a 2D grid."""
+        # Priority queue for the open set (cells to explore)
+        open_set = []
+        heapq.heappush(open_set, (0, start))
+        
+        # Dictionary to keep track of visited nodes and their predecessors
+        came_from = {}
+        came_from[start] = None
+        
+        while open_set:
+            # Get the cell with the lowest heuristic value
+            _, current = heapq.heappop(open_set)
+            
+            # If the goal is reached, reconstruct and return the path
+            if current == goal:
+                path = []
+                while current:
+                    path.append(current)
+                    current = came_from[current]
+                return path[::-1]  # Return reversed path
+            
+            # Explore neighbors (up, down, left, right)
+            neighbors = [(current[0] + dx, current[1] + dy) for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]]
+            
+            for neighbor in neighbors:
+                if 0 <= neighbor[0] < grid.shape[0] and 0 <= neighbor[1] < grid.shape[1]:  # Stay within bounds
+                    if grid[neighbor] == 0 and neighbor not in came_from:  # Pathable cell and not visited
+                        priority = self.heuristic(goal, neighbor)
+                        heapq.heappush(open_set, (priority, neighbor))
+                        came_from[neighbor] = current
+        
+        return None    
+
+    def draw_path_on_image(self, image, path, color=(0, 255, 0), thickness=2):
+        """
+        Draws the path on the given image.
+        
+        Parameters:
+        - image: The image on which to draw the path.
+        - path: The list of points representing the path.
+        - color: The color of the path (default is green).
+        - thickness: The thickness of the path lines (default is 2).
+        
+        Returns:
+        - The image with the path drawn on it.
+        """
+        if len(path) > 1:
+            for i in range(len(path) - 1):
+                pt1 = path[i]
+                pt2 = path[i + 1]
+                # Draw line between consecutive points
+                image = cv2.line(image, pt1[::-1], pt2[::-1], color, thickness)
+        return image
 
 if '__main__'== __name__:
     model_name = 'test_1'
@@ -183,5 +243,5 @@ if '__main__'== __name__:
     }    
     agent = Mazevil(model_path=model_path)
     while True:
-        # input('start...')
+        input('start...')
         agent.window_dxcam(**conf)
