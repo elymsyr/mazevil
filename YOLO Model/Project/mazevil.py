@@ -17,7 +17,7 @@ class Mazevil():
         self.window_x = self.window_rect[0]
         self.window_y = self.window_rect[1]
 
-        self.max_distance = 2000
+        self.max_distance = 200
         self.path_found = []
 
         self.cam: dxcam.DXCamera = dxcam.create(output_color="BGR")
@@ -71,12 +71,7 @@ class Mazevil():
         masked_cleared = (mask > 0).astype(np.uint8)
         self.window_image = np.stack([masked_cleared, masked_cleared, masked_cleared], axis=-1) * 255   
     
-    def enemy_found(self, enemies, shoot):
-        i=0
-        choosen_enemy = enemies[i]
-        while choosen_enemy[0] == 5:
-            i+=1
-            choosen_enemy = enemies[i]
+    def shoot_closest(self, enemies, shoot):
         if shoot:
             choosen_enemy = choosen_enemy[1]
             screen_x = choosen_enemy[0]+self.window_x+8
@@ -153,10 +148,9 @@ class Mazevil():
                         open_directions = self.find_directions()
                         self.window_image = cv2.circle(self.window_image, self.center, self.max_distance, (10,20,128), 1)
                         if enemies:
-                            self.enemy_found(enemies=enemies, shoot=shoot)
+                            self.shoot_closest(enemies=enemies[0][1], shoot=shoot)
                             for enemy in enemies:
                                 self.window_image = cv2.circle(self.window_image, enemy[1], 3, (0, 0, 256))
-                            
                             direction = self.find_optimal_direction(enemies, directions=np.array(open_directions) if len(open_directions)>0 else self.directions)
                             pt2 = (int(self.center[0] + direction[0] * 20), int(self.center[1] + direction[1] * 20))  # End point
                             self.window_image = cv2.line(self.window_image, self.center, pt2, [128,128,256],2)
