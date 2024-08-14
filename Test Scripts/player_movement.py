@@ -1,44 +1,61 @@
+import numpy as np
 import heapq
-import math
-class Node:
-    def __init__(self, x, y, cost):
-        self.x = x
-        self.y = y
-        self.cost = cost
-    def __lt__(self, other):
-        return self.cost < other.cost
-def euclidean_distance(x1, y1, x2, y2):
-    return math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
-def greedy_best_first_search(grid, start, goal):
-    rows = len(grid)
-    cols = len(grid[0])
-    pq = []
-    heapq.heappush(pq, Node(start[0], start[1], 0))
-    visited = set()
-    visited.add((start[0], start[1]))
-    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-    while pq:
-        current = heapq.heappop(pq)
-        if (current.x, current.y) == goal:
-            print(f"Goal reached at ({current.x}, {current.y})")
-            return
-        for d in directions:
-            new_x, new_y = current.x + d[0], current.y + d[1]
-            if 0 <= new_x < rows and 0 <= new_y < cols and grid[new_x][new_y] == 0 and (new_x, new_y) not in visited:
-                cost = euclidean_distance(new_x, new_y, goal[0], goal[1])
-                heapq.heappush(pq, Node(new_x, new_y, cost))
-                visited.add((new_x, new_y))
-    print("Goal not reachable")
 
-# Example grid
-grid = [
-    [0, 1, 1, 1],
-    [0, 0, 1, 1],
-    [1, 0, 0, 1],
-    [1, 1, 0, 0]
+def greedy_best_first_search(start, goal, grid, heuristic):
+    rows, cols, _ = grid.shape
+    open_list = []
+    heapq.heappush(open_list, (heuristic(start), start))
+    came_from = {}
+    came_from[start] = None
+    
+    while open_list:
+        _, current = heapq.heappop(open_list)
+        
+        if current == goal:
+            break
+        
+        # Get neighbors
+        neighbors = [(current[0] + dx, current[1] + dy) for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]]
+        neighbors = [(x, y) for x, y in neighbors if 0 <= x < rows and 0 <= y < cols and not np.array_equal(grid[x, y], [0, 0, 0])]
+        
+        for next in neighbors:
+            if next not in came_from:
+                came_from[next] = current
+                priority = heuristic(next)
+                heapq.heappush(open_list, (priority, next))
+    
+    # Reconstruct path
+    path = []
+    step = goal
+    while step:
+        path.append(step)
+        step = came_from.get(step)
+    path.reverse()
+    
+    # Mark the path in the grid
+    path_grid = np.copy(grid)
+    for (x, y) in path:
+        path_grid[x, y] = [255, 0, 0]  # Mark the path with a color (e.g., red)
+    
+    return path, path_grid
 
-]
+# Example heuristic function
+def manhattan_heuristic(a, b):
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+# Example grid (3D array where last dimension is color)
+grid = np.array([
+    [[255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255]],
+    [[255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 255, 255]],
+    [[255, 0, 0], [255, 0, 0], [255, 255, 255], [255, 255, 255], [255, 255, 255]],
+    [[255, 0, 0], [255, 0, 0], [255, 255, 255], [255, 0, 0], [255, 255, 255]],
+    [[255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255]]
+])
 
 start = (0, 0)
-goal = (3, 3)
-greedy_best_first_search(grid, start, goal)
+goal = (4, 4)
+
+path, path_grid = greedy_best_first_search(start, goal, grid, lambda x: manhattan_heuristic(x, goal))
+print("Path found:", path)
+
+# Optionally: print or display the path_grid to visualize the result
