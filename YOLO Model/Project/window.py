@@ -39,8 +39,10 @@ def path_detection(center, boxes, rgb, lower_bound = np.array([100, 50, 50]), up
     for box in boxes:
         cv2.rectangle(img=window_image, **box)
     window_image = cv2.floodFill(window_image, None, center, (250, 0, 0))[1]
-    window_image = cv2.circle(window_image, center, 1, (0, 0, 256))
-    window_image = cv2.inRange(window_image, np.array([250, 0, 0]), np.array([250, 0, 0]))
+    # window_image = cv2.circle(window_image, center, 1, (0, 0, 256))
+    mask = cv2.inRange(window_image, np.array([250, 0, 0]), np.array([250, 0, 0]))
+    masked_cleared = (mask > 0).astype(np.uint8)
+    window_image = np.stack([masked_cleared, masked_cleared, masked_cleared], axis=-1) * 255   
     return window_image
 
 def enemy_found(enemies, window_x, window_y):
@@ -52,12 +54,17 @@ def enemy_found(enemies, window_x, window_y):
     if not CLICKED: win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, screen_x, screen_y, 0, 0)
     CLICKED = True
 
-def find_available_directions(center, map, directions):
+def find_available_directions(center, window_image, directions):
+    available_directions = []
     for direction in directions:
-        check_point = (int(center[0] + direction[0] * 15), int(center[1] + direction[1] * 15))
-        if map(check_point) != (256,256,256):
-            print(direction)
-    
+        x = int(center[0] + direction[0] * 21)
+        y = int(center[1] + direction[1] * 21)
+        pt2 = (x, y)
+        if np.array_equal(window_image[y, x], [255,255,255]):
+            window_image = cv2.line(window_image, center, pt2, [10,20,128],1)
+            available_directions.append(direction)
+    return window_image, available_directions
+
 
 def window_dxcam(model_path: str, draw: bool = True, imgsz: int = 480, show_result:bool = True, path: bool = True, model_detect: bool = True, scale_order: list = [4], min_conf: float = 0.4, window_title = 'Mazevil', lower_bound = np.array([100, 50, 50]), upper_bound = np.array([255, 150, 150])):
     lower_bound = np.array([24,20,37]) # 100, 50, 50
@@ -74,7 +81,6 @@ def window_dxcam(model_path: str, draw: bool = True, imgsz: int = 480, show_resu
     left, top, right, bottom = win32gui.GetWindowRect(hwnd)
     top_offset, bottom_offset = 50, 58
     window_image = cam.grab(region=(left+8, top+top_offset, right-8, bottom-bottom_offset))
-    print(window_image)
     height, width = window_image.shape[:2]
     center = (int(width/2), int(height/2+30))
     fps_list = []
@@ -90,7 +96,7 @@ def window_dxcam(model_path: str, draw: bool = True, imgsz: int = 480, show_resu
         [-1, -1], # Down-Left
         [-1, 0],  # Left
         [-1, 1]   # Up-Left
-    ], dtype=np.float64)    
+    ], dtype=np.float64)
     
     while True:
         global CLICKED
@@ -136,18 +142,15 @@ def window_dxcam(model_path: str, draw: bool = True, imgsz: int = 480, show_resu
                         [point for point in enemy if euclidean_distance(point[1], center) <= max_distance],
                         key=lambda point: euclidean_distance(point[1], center)
                     )
-                    direction = find_optimal_direction(center, directions=directions)
+                    window_image, new_directions = find_available_directions(center=center, window_image=window_image, directions=directions)
                     if enemies:
                         for enemy in enemies:
                             window_image = cv2.circle(window_image, enemy[1], 3, (0, 0, 256))
                         
                         enemy_found(enemies=enemies, window_x=window_x, window_y=window_y)
-                        
-                        
-                        pt1 = (int(center[0]), int(center[1]))  
+                        direction = find_optimal_direction(center, enemies, directions=np.array(new_directions) if len(new_directions)>0 else directions)
                         pt2 = (int(center[0] + direction[0] * 20), int(center[1] + direction[1] * 20))  # End point
-                    
-                        window_image = cv2.line(window_image, pt1, pt2, [128,128,256],2)
+                        window_image = cv2.line(window_image, center, pt2, [128,128,256],2)
                     elif CLICKED:
                         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, window_x, window_y, 0, 0)
                         CLICKED = False
