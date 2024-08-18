@@ -71,7 +71,7 @@ class Mazevil():
 
     def find_optimal_direction(self, object_positions, directions):
         # Ensure that object_weights has the same length as object_positions
-        object_weights = [15 if int(x[0])==5 else 10 for x in object_positions]
+        object_weights = [1.5 if int(x[0])==5 else 1 for x in object_positions]
         object_positions = [x[1] for x in object_positions]
         # Compute the weighted optimal movement vector
         optimal_vector = np.zeros(2, dtype=np.float64)
@@ -86,12 +86,6 @@ class Mazevil():
             optimal_vector = (optimal_vector / np.linalg.norm(optimal_vector))
         # Find the closest direction to the optimal vector
         best_direction = directions[np.argmin(np.linalg.norm(directions - optimal_vector, axis=1))]
-        # print("Object Weights:", object_weights)
-        # print("Object Positions:", object_positions)
-        # print("Original Center:", self.original_center)
-        # print("Optimal Vector:", optimal_vector)
-        print("Directions:", directions)
-        # print("Best Direction:", best_direction)        
         return tuple(best_direction)
 
     def path_detection(self, boxes):
@@ -210,7 +204,7 @@ class Mazevil():
                         self.window_image = cv2.circle(self.window_image, self.center, self.max_distance, (10,20,128), 1)
                         if enemies:
                             self.shoot_closest(enemies=enemies, shoot=shoot)
-                            optimal_direction = self.find_optimal_direction(enemies, directions=np.array(open_directions) if len(open_directions)>0 else self.directions)
+                            # optimal_direction = self.find_optimal_direction(enemies, directions=np.array(open_directions) if len(open_directions)>0 else self.directions)
                         elif self.CLICKED:
                             win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, self.window_x, self.window_y, 0, 0)
                             self.CLICKED = False
@@ -219,10 +213,10 @@ class Mazevil():
                             x = int(self.center[0] + direction[0] * 12)
                             y = int(self.center[1] + direction[1] * 12)
                             self.window_image = cv2.line(self.window_image, self.center, (x,y), [10,20,128],1)
-                        if enemies:
-                            x = int(self.center[0] + optimal_direction[0] * 12)
-                            y = int(self.center[1] + optimal_direction[1] * 12)
-                            self.window_image = cv2.line(self.window_image, self.center, (x,y), [128,128,256],2)
+                        # if enemies:
+                        #     x = int(self.center[0] + optimal_direction[0] * 12)
+                        #     y = int(self.center[1] + optimal_direction[1] * 12)
+                        #     self.window_image = cv2.line(self.window_image, self.center, (x,y), [128,128,256],2)
 
                     if draw:
                         for result in results:
