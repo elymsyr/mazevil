@@ -26,13 +26,8 @@ class Mazevil():
         self.window_image = self.cam.grab(region=(self.left+8, self.top+50, self.right-8, self.bottom-58))
         self.masked_cleared = (cv2.inRange(self.window_image, self.lower_bound, self.upper_bound) > 0).astype(np.uint8)
         
-        self.height, self.width = self.window_image.shape[:2]
-        self.center = (int(self.width/2), int(self.height/2+30))
-
-        self.path_downscaled_hw = (360, 180)
-
-        self.path_scaled_x = self.path_downscaled_hw[0] / self.width
-        self.path_scaled_y = self.path_downscaled_hw[1] / self.height
+        self.height, self.width = int(self.window_image.shape[1]//5), int(self.window_image.shape[0]//5)
+        self.center = (int(self.width/2), int(self.height/2+6))
 
         self.fps_list = []
 
@@ -47,8 +42,8 @@ class Mazevil():
             [-1, 1]   # Up-Left
         ], dtype=np.float64)
         
-    def convert_coordinates(self, old):
-        return (int(old[1] * self.path_scaled_x), int(old[0] * self.path_scaled_y))
+    def convert_coordinates(self, old_x, old_y):
+        return (int(old_x * self.path_scaled_x), int(old_y * self.path_scaled_y))
         
     def find_optimal_direction(self, object_positions, directions):
         # Ensure that object_weights has the same length as object_positions
@@ -75,12 +70,12 @@ class Mazevil():
         cv2.imshow('path', np.stack([downscaled_array, downscaled_array, downscaled_array], axis=-1)*255)
 
     def path_detection(self, boxes):
-        window_image = np.stack([self.masked_cleared, self.masked_cleared, self.masked_cleared], axis=-1) * 255   
+        self.window_image = np.stack([self.masked_cleared, self.masked_cleared, self.masked_cleared], axis=-1) * 255   
         for box in boxes:
-            cv2.rectangle(img=window_image, **box)
-        window_image = cv2.floodFill(window_image, None, self.center, (250, 0, 0))[1]
-        self.mask = cv2.inRange(window_image, np.array([250, 0, 0]), np.array([250, 0, 0]))
-        masked_cleared = (self.mask > 0).astype(np.uint8)
+            cv2.rectangle(img=self.window_image, **box)
+        self.window_image = cv2.floodFill(self.window_image, None, self.center, (250, 0, 0))[1]
+        mask = cv2.inRange(self.window_image, np.array([250, 0, 0]), np.array([250, 0, 0]))
+        masked_cleared = (mask > 0).astype(np.uint8)
         self.window_image = np.stack([masked_cleared, masked_cleared, masked_cleared], axis=-1) * 255
 
     def shoot_closest(self, enemies, shoot):
@@ -90,8 +85,8 @@ class Mazevil():
             if int(enemy[0]) != 5 and not target:
                 target = enemy[1]
         if shoot and target:
-            screen_x = target[0]+self.window_x+8
-            screen_y = target[1]+self.window_y+54
+            screen_x = target[0]*5+self.window_x+8
+            screen_y = target[1]*5+self.window_y+54
             win32api.SetCursorPos((screen_x, screen_y))
             if not self.CLICKED: win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, screen_x, screen_y, 0, 0)
             self.CLICKED = True
@@ -121,16 +116,17 @@ class Mazevil():
             self.left, self.top, self.right, self.bottom = win32gui.GetWindowRect(self.hwnd)
             top_offset, bottom_offset = 50, 58
             self.window_image = self.cam.grab(region=(self.left+8, self.top+top_offset, self.right-8, self.bottom-bottom_offset))
+            self.window_image = cv2.resize(self.window_image, (self.height, self.width), interpolation=cv2.INTER_NEAREST)
             if self.window_image is not None:
                 self.mask = cv2.inRange(cv2.cvtColor(self.window_image, cv2.COLOR_BGR2RGB), self.lower_bound, self.upper_bound)
-                self.masked_cleared = (self.mask > 0).astype(np.uint8)  
+                self.masked_cleared = (self.mask > 0).astype(np.uint8)
                 currTime = time.perf_counter()
                 fps = 1 / (currTime - prevTime)
                 self.fps_list.append(fps)
                 prevTime = currTime
 
                 if model_detect:                  
-                    results = self.model(classes=[0,1,2,3,4,5,7,9,10,11,12,13,14],device=0,source=self.window_image, conf=min_conf, imgsz=imgsz, stream=True, verbose=False)
+                    results = self.model(classes=[0,1,2,3,4,5,7,9,10,11,12,13,14],device=0,source=self.window_image, conf=min_conf, imgsz=self.width, stream=True, verbose=False)
                     if path:
                         enemy = [] 
                         enemy_loc = [] 
@@ -141,7 +137,10 @@ class Mazevil():
                             for box in result.boxes:
                                 # Extract bounding box coordinates and other information
                                 x1, y1, x2, y2 = map(int, box.xyxy[0])
+                                # x1, y1 = self.convert_coordinates(x1, y1)
+                                # x2, y2 = self.convert_coordinates(x2, y2)
                                 x, y, *_ = map(int, box.xywh[0])
+                                # x, y = self.convert_coordinates(x, y)
                                 confidence = box.conf
                                 if confidence > min_conf:
                                     class_id = box.cls
@@ -164,13 +163,13 @@ class Mazevil():
                             key=lambda point: self.path_finding.euclidean_distance(point[1], self.center)
                         )
                         
-                        open_directions = self.find_directions()
+                        # open_directions = self.find_directions()
                         self.window_image = cv2.circle(self.window_image, self.center, self.max_distance, (10,20,128), 1)
                         if enemies:
                             self.shoot_closest(enemies=enemies, shoot=shoot)
-                            direction = self.find_optimal_direction(enemies, directions=np.array(open_directions) if len(open_directions)>0 else self.directions)
-                            pt2 = (int(self.center[0] + direction[0] * 20), int(self.center[1] + direction[1] * 20))  # End point
-                            self.window_image = cv2.line(self.window_image, self.center, pt2, [128,128,256],2)
+                            # direction = self.find_optimal_direction(enemies, directions=np.array(open_directions) if len(open_directions)>0 else self.directions)
+                            # pt2 = (int(self.center[0] + direction[0] * 20), int(self.center[1] + direction[1] * 20))  # End point
+                            # self.window_image = cv2.line(self.window_image, self.center, pt2, [128,128,256],2)
                         elif self.CLICKED:
                             win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, self.window_x, self.window_y, 0, 0)
                             self.CLICKED = False
