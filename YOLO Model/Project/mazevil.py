@@ -31,7 +31,6 @@ class Mazevil():
         self.original_height, self.original_width = int(self.window_image.shape[1]), int(self.window_image.shape[0])
         self.width, self.height = int(self.window_image.shape[1]//self.multip), int(self.window_image.shape[0]//self.multip)
         self.center = (int(self.width/2), int(self.height/2+10))
-        print(self.width, self.height)
 
         self.fps_list = []
 
@@ -45,31 +44,7 @@ class Mazevil():
             [-1, 0],  # Left
             [-1, 1]   # Up-Left
         ], dtype=np.float64)
-        
-    def convert_coordinates(self, old_x, old_y):
-        """
-        Converts coordinates from the old image scale to the new image scale after resizing.
-
-        Parameters:
-        old_x (int): The x-coordinate in the old image.
-        old_y (int): The y-coordinate in the old image.
-
-        Returns:
-        new_x (int): The x-coordinate in the resized image.
-        new_y (int): The y-coordinate in the resized image.
-        """
-        # New image dimensions after resizing
-        
-        # Calculate the scale factors
-        scale_x = self.width / self.original_width
-        scale_y = self.height / self.original_height
-        
-        # Convert the old coordinates to new coordinates
-        new_x = int(old_x * scale_x)
-        new_y = int(old_y * scale_y)
-        
-        return new_x, new_y      
-        
+       
     def find_optimal_direction(self, object_positions, directions):
         # Ensure that object_weights has the same length as object_positions
         object_weights = [x[0] for x in object_positions]
@@ -88,33 +63,6 @@ class Mazevil():
         # Find the closest direction to the optimal vector
         best_direction = directions[np.argmin(np.linalg.norm(directions - optimal_vector, axis=1))]
         return best_direction
-
-    def path_to_target_detection(self, target = None):
-        # Normalize to range [0, 1]
-        array_normalized = self.window_image.astype(float) / 255.0
-        array_normalized = cv2.resize(array_normalized, (int(self.width//2), int(self.height//2)), interpolation=cv2.INTER_CUBIC)
-        np.save('array_file.npy', array_normalized)
-        # while len(self.path_found) < 2:
-        #     # Find the indices of all pixels that are [0, 0, 0]
-        #     black_pixels = np.argwhere((self.window_image == [255,255,255]).all(axis=2))
-            
-        #     # Check if there are any black pixels
-        #     if len(black_pixels) == 0:
-        #         print("No black pixels found.")
-        #         return None
-            
-        #     # Randomly choose one of the black pixels
-        #     random_index = np.random.choice(len(black_pixels))
-        #     random_pixel = black_pixels[random_index]
-        #     # Return the (x, y) coordinates
-        #     x,y = tuple(random_pixel)
-        #     print(x,y)
-        #     self.window_image = cv2.circle(self.window_image, (x,y), 1, (0, 0, 256))
-        #     image = cv2.imread(self.window_image, cv2.IMREAD_GRAYSCALE)
-        #     self.window_image= image / 255.0
-        #     self.path_found = self.path_finding.greedy_best_first_search(start=(x,y), goal=self.center, grid=self.window_image)
-        #     print(self.path_found)
-        # self.window_image = self.path_finding.draw_path_on_image(image=self.window_image, path = self.path_found, color=(0, 255, 0), thickness=1)
 
     def path_detection(self, boxes):
         self.window_image = np.stack([self.masked_cleared, self.masked_cleared, self.masked_cleared], axis=-1) * 255   
@@ -142,10 +90,22 @@ class Mazevil():
     def find_directions(self):
         open_directions = []
         for direction in self.directions:
-            x = int(self.center[0] + direction[0] * 21)
-            y = int(self.center[1] + direction[1] * 21)
+            x = int(self.center[0] + direction[0] * 11)
+            x1 = int(self.center[0] + direction[0] * 9)
+            x2 = int(self.center[0] + direction[0] * 8)
+            x3 = int(self.center[0] + direction[0] * 7)
+            x4 = int(self.center[0] + direction[0] * 6)
+            y = int(self.center[1] + direction[1] * 11)
+            y1 = int(self.center[1] + direction[1] * 9)
+            y2 = int(self.center[1] + direction[1] * 8)
+            y3 = int(self.center[1] + direction[1] * 7)
+            y4 = int(self.center[1] + direction[1] * 6)
             pt2 = (x, y)
-            if np.array_equal(self.window_image[y, x], [255,255,255]):
+            if np.array_equal(self.window_image[y, x], [255,255,255])\
+                and np.array_equal(self.window_image[y1, x1], [255,255,255])\
+                    and np.array_equal(self.window_image[y2, x2], [255,255,255])\
+                        and np.array_equal(self.window_image[y3, x3], [255,255,255])\
+                            and np.array_equal(self.window_image[y4, x4], [255,255,255]):
                 self.window_image = cv2.line(self.window_image, self.center, pt2, [10,20,128],1)
                 open_directions.append(direction)
         return open_directions
@@ -212,20 +172,19 @@ class Mazevil():
                             key=lambda point: self.path_finding.euclidean_distance(point[1], self.center)
                         )
                         
+                        self.path_detection(boxes = boxes)
+                        
                         open_directions = self.find_directions()
                         self.window_image = cv2.circle(self.window_image, self.center, self.max_distance, (10,20,128), 1)
                         if enemies:
                             self.shoot_closest(enemies=enemies, shoot=shoot)
                             direction = self.find_optimal_direction(enemies, directions=np.array(open_directions) if len(open_directions)>0 else self.directions)
                             pt2 = (int(self.center[0] + direction[0] * 20), int(self.center[1] + direction[1] * 20))  # End point
-                            self.window_image = cv2.line(self.window_image, self.center, pt2, [128,128,256],5)
+                            self.window_image = cv2.line(self.window_image, self.center, pt2, [128,128,256],1)
                         elif self.CLICKED:
                             win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, self.window_x, self.window_y, 0, 0)
                             self.CLICKED = False
                             
-                        self.path_detection(boxes = boxes)
-                        # # self.path_to_target_detection(target=1) if len(self.fps_list)%100 == 0 else self.path_to_target_detection()
-                        self.path_to_target_detection()
                             
                     if draw:
                         for result in results:
@@ -236,6 +195,7 @@ class Mazevil():
                     cv2.imshow(f'{self.window_title} YOLOV8', self.window_image)
                     if cv2.waitKey(1) & 0xFF == ord('q'):
                         break
+            # if len(self.fps_list) > 100: break
         
         print(sum(self.fps_list)/len(self.fps_list))
         cv2.destroyAllWindows()
@@ -270,7 +230,7 @@ class GreedyBFS():
             for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                 neighbor = (current[0] + dx, current[1] + dy)
                 if (0 <= neighbor[0] < rows) and (0 <= neighbor[1] < cols):
-                    if np.array_equal(grid[neighbor[0], neighbor[1]], [255,255,255]):
+                    if np.array_equal(grid[neighbor[0], neighbor[1]], 1):
                         if neighbor not in came_from:
                             came_from[neighbor] = current
                             heapq.heappush(open_set, (self.manhattan_heuristic(neighbor, goal), neighbor))
@@ -320,17 +280,26 @@ if '__main__'== __name__:
     # loaded_array = np.load('array_file.npy')
     # center = (int(loaded_array.shape[1]/2), int(loaded_array.shape[0]/2))
     # # Find the indices of all pixels that are [0, 0, 0]
-    # black_pixels = np.argwhere((loaded_array == [255,255,255]).all(axis=2))
+    
+    # print(loaded_array)
+    
+    # black_pixels = np.argwhere((loaded_array == 1).all())
     
     # # Check if there are any black pixels
-    # if len(black_pixels) == 0:
+    # if not len(black_pixels) > 0:
     #     print("No black pixels found.")
     
     # # Randomly choose one of the black pixels
     # random_index = np.random.choice(len(black_pixels))
     # random_pixel = black_pixels[random_index]
     # # Return the (x, y) coordinates
-    # x,y = tuple(random_pixel)
-    # print(x,y)
+    # y,x = tuple(random_pixel)
+    # window_image = np.stack([loaded_array,loaded_array,loaded_array], axis=-1) * 255
+    # # window_image = loaded_array
+    # window_image = cv2.circle(window_image, center, 2, (0,255,0), -1)
+    # print(window_image.shape)
+    # cv2.imshow('a', window_image)
+    # cv2.waitKey(1000)
+    # print(f"{x=}  {y=}  {center=}  {loaded_array.shape=}")
     # path_found = path_finding.greedy_best_first_search(start=(x,y), goal=center, grid=loaded_array)
     # print(path_found)
