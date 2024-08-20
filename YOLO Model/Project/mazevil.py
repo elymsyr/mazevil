@@ -17,7 +17,7 @@ class Mazevil():
         self.window_x = self.window_rect[0]
         self.window_y = self.window_rect[1]
 
-        self.max_distance = 200
+        self.max_distance = 150
         self.path_found = []
 
         self.cam: dxcam.DXCamera = dxcam.create(output_color="BGR")
@@ -36,22 +36,38 @@ class Mazevil():
         self.path_width, self.path_height = int(self.window_image.shape[1]//self.multip), int(self.window_image.shape[0]//self.multip)
         self.path_center = (int(self.path_width/2), int(self.path_height/2+11))
         
+        self.move = np.array([1,1])
 
         self.fps_list = []
 
         self.directions = np.array([
-            [0, 1],   # Up
-            [1, 1],   # Up-Right
+            [1, 1],   # Down-Right
+            [0, 1],   # Down
             [1, 0],   # Right
-            [1, -1],  # Down-Right
-            [0, -1],  # Down
-            [-1, -1], # Down-Left
+            [1, -1],  # Up-Right
+            [0, -1],  # Up
+            [-1, -1], # Up-Left
             [-1, 0],  # Left
-            [-1, 1],  # Up-Left
+            [-1, 1],  # Down-Left
         ], dtype=np.float64)
 
-    def find_optimal_direction(self, object_positions, directions):
-        pass
+    def optimal_direction(self, enemies, open_directions):
+        enemy_positions = enemies[:, 1]
+        weights =  enemies[:, 2]
+        
+        resultant_vector = np.zeros(2)
+        for enemy_position, weight in zip(enemy_positions, weights):
+            vector_to_player = np.array([self.center[0], self.center[1]]) - enemy_position
+            normalized_vector = vector_to_player / np.linalg.norm(vector_to_player)
+            weighted_vector = normalized_vector * weight
+            resultant_vector += weighted_vector
+
+        # Find the closest direction
+        norms = np.linalg.norm(open_directions - resultant_vector, axis=1)
+        best_direction_index = np.argmin(norms)
+        best_direction = open_directions[best_direction_index]
+        
+        return best_direction
 
     def path_detection(self, boxes):
         self.path_window_image = np.stack([self.masked_cleared, self.masked_cleared, self.masked_cleared], axis=-1) * 255   
@@ -113,7 +129,6 @@ class Mazevil():
             top_offset, bottom_offset = 50, 58
             self.window_image = self.cam.grab(region=(self.left+8, self.top+top_offset, self.right-8, self.bottom-bottom_offset))
 
-            
             if self.window_image is not None:
                 
                 
@@ -146,12 +161,13 @@ class Mazevil():
                                         boxes.append({"pt1": (x1-2, y1),"pt2": (x2+2, y2+2),"color": color,"thickness": -1})
                                     elif int(class_id) in [0,1,4,5,12,14]:
                                         dist = self.path_finding.euclidean_distance((x,y), self.center)
-                                        weight = 100 / dist * (4 if int(class_id) == 5 else 2)
-                                        enemies.append([int(class_id), (x,y), weight, dist])
+                                        weight = 100 / dist * (4 if int(class_id) == 5 else 3)
+                                        enemies.append([int(class_id), [x,y], weight, dist])
                                     elif int(class_id) in [7,9,10,11,13]:
                                         rewards.append((x,y, int(class_id)))
                                     else: continue
 
+                        enemies = [enemy for enemy in enemies if enemy[-1] < self.max_distance]
                         enemies = sorted(enemies, key=lambda x: x[-1])
 
                         self.path_detection(boxes = boxes)
@@ -159,10 +175,12 @@ class Mazevil():
                         open_directions = self.find_directions()
 
                         self.window_image = cv2.circle(self.window_image, self.center, self.max_distance, (10,20,128), 1)
+                        self.path_window_image = cv2.circle(self.path_window_image, self.path_center, int(self.max_distance//self.multip), (10,20,128), 1)
 
                         if enemies:
                             self.shoot_closest(enemies=enemies, shoot=shoot)
-                            # optimal_direction = self.find_optimal_direction(enemies, directions=np.array(open_directions) if len(open_directions)>0 else self.directions)
+                            enemies_array = np.array(enemies, dtype="object")
+                            optimal_direction = self.optimal_direction(enemies_array, np.array(open_directions) if len(open_directions)>0 else self.directions)
                         elif self.CLICKED:
                             win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, self.window_x, self.window_y, 0, 0)
                             self.CLICKED = False
@@ -172,10 +190,10 @@ class Mazevil():
                             y = int(self.path_center[1] + direction[1] * 12)
                             self.path_window_image = cv2.line(self.path_window_image, self.path_center, (x,y), [10,20,138],1)
 
-                        # if enemies:
-                        #     x = int(self.center[0] + optimal_direction[0] * 12)
-                        #     y = int(self.center[1] + optimal_direction[1] * 12)
-                        #     self.window_image = cv2.line(self.window_image, self.center, (x,y), [128,128,256],2)
+                        if enemies:
+                            x = int(self.path_center[0] + optimal_direction[0] * 12)
+                            y = int(self.path_center[1] + optimal_direction[1] * 12)
+                            self.path_window_image = cv2.line(self.path_window_image, self.path_center, (x,y), [128,128,256],2)
 
                     if draw:
                         for result in results:
@@ -184,13 +202,13 @@ class Mazevil():
                 if show_result:
                     cv2.putText(self.window_image, f"FPS: {int(fps) if abs(self.fps_list[-1] - fps) > 1 else int(self.fps_list[-1])}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                     cv2.putText(self.path_window_image, f"FPS: {int(fps) if abs(self.fps_list[-1] - fps) > 1 else int(self.fps_list[-1])}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                    # cv2.imshow(f'{self.window_title} YOLOV8 IMAGE', self.window_image)
+                    cv2.imshow(f'{self.window_title} YOLOV8 IMAGE', self.window_image)
                     cv2.imshow(f'{self.window_title} YOLOV8 PATH', self.path_window_image)
                     if cv2.waitKey(1) & 0xFF == ord('q'):
                         break
             # if len(self.fps_list) > 100: break
         
-        print(sum(self.fps_list)/len(self.fps_list))
+        print(sum(self.fps_list)/len(self.fps_list), len(self.fps_list))
         cv2.destroyAllWindows()
 
 class GreedyBFS():
@@ -268,31 +286,3 @@ if '__main__'== __name__:
     }
     agent = Mazevil(model_path=model_path)
     agent.window_dxcam(**conf)
-    
-    # path_finding = GreedyBFS()
-    # loaded_array = np.load('array_file.npy')
-    # center = (int(loaded_array.shape[1]/2), int(loaded_array.shape[0]/2))
-    # # Find the indices of all pixels that are [0, 0, 0]
-    
-    # print(loaded_array)
-    
-    # black_pixels = np.argwhere((loaded_array == 1).all())
-    
-    # # Check if there are any black pixels
-    # if not len(black_pixels) > 0:
-    #     print("No black pixels found.")
-    
-    # # Randomly choose one of the black pixels
-    # random_index = np.random.choice(len(black_pixels))
-    # random_pixel = black_pixels[random_index]
-    # # Return the (x, y) coordinates
-    # y,x = tuple(random_pixel)
-    # window_image = np.stack([loaded_array,loaded_array,loaded_array], axis=-1) * 255
-    # # window_image = loaded_array
-    # window_image = cv2.circle(window_image, center, 2, (0,255,0), -1)
-    # print(window_image.shape)
-    # cv2.imshow('a', window_image)
-    # cv2.waitKey(1000)
-    # print(f"{x=}  {y=}  {center=}  {loaded_array.shape=}")
-    # path_found = path_finding.greedy_best_first_search(start=(x,y), goal=center, grid=loaded_array)
-    # print(path_found)
