@@ -1,4 +1,4 @@
-import dxcam, cv2, win32gui, win32api, win32con, time, heapq, multiprocessing
+import dxcam, cv2, win32gui, win32api, win32con, time, pydirectinput, heapq, multiprocessing
 from ultralytics import YOLO
 import numpy as np
 
@@ -23,7 +23,7 @@ class Mazevil():
 
         manager = multiprocessing.Manager()
         self.shared_data = manager.dict()
-        self.shared_data['move'] = (1,1)
+        self.shared_data['move'] = (2,2)
         
         self.fps_list = []
 
@@ -37,11 +37,47 @@ class Mazevil():
             [-1, 0],  # Left
             [-1, 1],  # Down-Left
         ], dtype=np.float64)
+        
+        self.current_keys = set()
+        self.key_map = {
+            (1, 1): ('S', 'D'),
+            (0, 1): ('S',),
+            (1, 0): ('R',),
+            (1, -1): ('W', 'D'),
+            (0, -1): ('W',),
+            (-1, -1): ('W', 'A'),
+            (-1, 0): ('A',),
+            (-1, 1): ('S', 'A'),
+            (2,2): ('X')
+        }
+
+    def update_keys(self):
+        # Get the target keys based on the input tuple
+        if (not self.shared_data['move'] == (2,2)) and (not self.shared_data['move'] == (3,3)):
+            target_keys = self.key_map.get(self.shared_data['move'], ())
+            
+            # Determine the keys that need to be pressed and released
+            keys_to_press = set(target_keys) - self.current_keys
+            keys_to_release = self.current_keys - set(target_keys)
+            
+            # Press the keys that need to be pressed
+            for key in keys_to_press:
+                pydirectinput.keyDown(key)
+            
+            # Release the keys that need to be released
+            for key in keys_to_release:
+                pydirectinput.keyUp(key)
+            
+            # Update the current keys set
+            self.current_keys = set(target_keys)
+        elif self.shared_data['move'] == (2,2):
+            for key in ['W', 'A', 'S', 'D']:pydirectinput.keyUp(key)
+            self.shared_data['move'] = (3,3)
 
     def move_player(self):
         while True:
-            print(self.shared_data['move'])
-            time.sleep(1)  # Adjust the sleep time as needed
+            time.sleep(0.1)
+            self.update_keys()
 
     def start_movement(self):
         # Create a process to run the move_player method
@@ -209,11 +245,16 @@ class Mazevil():
                             self.path_window_image = cv2.line(self.path_window_image, self.path_center, (x,y), [10,20,138],1)
 
                         if enemies:
-                            x = int(self.path_center[0] + optimal_direction[0] * 12)
-                            y = int(self.path_center[1] + optimal_direction[1] * 12)
-                            self.path_window_image = cv2.line(self.path_window_image, self.path_center, (x,y), [128,128,256],2)
+                            # x = int(self.path_center[0] + optimal_direction[0] * 12)
+                            # y = int(self.path_center[1] + optimal_direction[1] * 12)
+                            # self.path_window_image = cv2.line(self.path_window_image, self.path_center, (x,y), [128,128,256],2)
+                                                        
+                            x = int(self.center[0] + optimal_direction[0] * 24)
+                            y = int(self.center[1] + optimal_direction[1] * 24)
+                            self.window_image = cv2.line(self.window_image, self.center, (x,y), [128,128,256],2)
                             
-                            self.shared_data['move'] = tuple(optimal_direction)
+                            self.shared_data['move'] = tuple(optimal_direction) if enemies[0][-1] < self.max_distance//2 else (2,2) 
+                        elif (not self.shared_data['move'] == (2,2)) and (not self.shared_data['move'] == (3,3)): self.shared_data['move'] = (2,2)
                     
                     if draw:
                         for result in results:
