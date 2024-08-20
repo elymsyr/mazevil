@@ -1,7 +1,6 @@
-import dxcam, cv2, win32gui, win32api, win32con, time, heapq
+import dxcam, cv2, win32gui, win32api, win32con, time, heapq, multiprocessing
 from ultralytics import YOLO
 import numpy as np
-
 
 class Mazevil():
     def __init__(self, model_path, window_title = 'Mazevil'):
@@ -19,25 +18,13 @@ class Mazevil():
 
         self.max_distance = 150
         self.path_found = []
-
-        self.cam: dxcam.DXCamera = dxcam.create(output_color="BGR")
-        self.left, self.top, self.right, self.bottom = win32gui.GetWindowRect(self.hwnd)
-
-        self.path_window_image = None
-        self.window_image = self.cam.grab(region=(self.left+8, self.top+50, self.right-8, self.bottom-58))
-        self.masked_cleared = (cv2.inRange(self.window_image, self.lower_bound, self.upper_bound) > 0).astype(np.uint8)
-        
         self.multip = 2
-        
-        # self.width, self.height = int(self.window_image.shape[1]//self.multip), int(self.window_image.shape[0]//self.multip)
-        self.width, self.height = int(self.window_image.shape[1]), int(self.window_image.shape[0])
-        self.center = (int(self.width/2), int(self.height/2+11))
 
-        self.path_width, self.path_height = int(self.window_image.shape[1]//self.multip), int(self.window_image.shape[0]//self.multip)
-        self.path_center = (int(self.path_width/2), int(self.path_height/2+11))
-        
-        self.move = np.array([1,1])
 
+        manager = multiprocessing.Manager()
+        self.shared_data = manager.dict()
+        self.shared_data['move'] = (1,1)
+        
         self.fps_list = []
 
         self.directions = np.array([
@@ -51,10 +38,27 @@ class Mazevil():
             [-1, 1],  # Down-Left
         ], dtype=np.float64)
 
+    def move_player(self):
+        while True:
+            print(self.shared_data['move'])
+            time.sleep(1)  # Adjust the sleep time as needed
+
+    def start_movement(self):
+        # Create a process to run the move_player method
+        # Ensure `move_player` does not depend on unpickleable attributes
+        process = multiprocessing.Process(target=self.move_player)
+        process.start()
+        return process
+
+    def stop_movement(self, process):
+        # Terminate the process
+        process.terminate()
+        process.join()
+
     def optimal_direction(self, enemies, open_directions):
         enemy_positions = enemies[:, 1]
         weights =  enemies[:, 2]
-        
+
         resultant_vector = np.zeros(2)
         for enemy_position, weight in zip(enemy_positions, weights):
             vector_to_player = np.array([self.center[0], self.center[1]]) - enemy_position
@@ -66,11 +70,11 @@ class Mazevil():
         norms = np.linalg.norm(open_directions - resultant_vector, axis=1)
         best_direction_index = np.argmin(norms)
         best_direction = open_directions[best_direction_index]
-        
+
         return best_direction
 
     def path_detection(self, boxes):
-        self.path_window_image = np.stack([self.masked_cleared, self.masked_cleared, self.masked_cleared], axis=-1) * 255   
+        self.path_window_image = np.stack([self.masked_cleared, self.masked_cleared, self.masked_cleared], axis=-1) * 255
         for box in boxes:
             self.path_window_image = cv2.rectangle(img=self.path_window_image, **box)
         self.path_window_image = cv2.resize(self.path_window_image, (self.path_width, self.path_height), interpolation=cv2.INTER_NEAREST)
@@ -98,9 +102,9 @@ class Mazevil():
         check_up = 1
         for direction in self.directions:
             x = int(self.path_center[0] + direction[0] * 12)
-            x1 = int(self.path_center[0] + direction[0] * 9)            
+            x1 = int(self.path_center[0] + direction[0] * 9)
             y = int(self.path_center[1] + direction[1] * 12)
-            y1 = int(self.path_center[1] + direction[1] * 9)           
+            y1 = int(self.path_center[1] + direction[1] * 9)
             if np.array_equal(self.path_window_image[y, x], [255,255,255])\
                 and np.array_equal(self.path_window_image[y1, x1], [255,255,255]):
                 if np.array_equal(direction, [0,-1]): continue
@@ -114,35 +118,49 @@ class Mazevil():
         return open_directions
 
     def window_dxcam(self, shoot: bool = False, draw: bool = True, imgsz: int = 480, show_result:bool = True, path: bool = True, model_detect: bool = True, min_conf: float = 0.4):
+        self.cam: dxcam.DXCamera = dxcam.create(output_color="BGR")
+        self.left, self.top, self.right, self.bottom = win32gui.GetWindowRect(self.hwnd)
+
+        self.path_window_image = None
+        self.window_image = self.cam.grab(region=(self.left+8, self.top+50, self.right-8, self.bottom-58))
+        self.masked_cleared = (cv2.inRange(self.window_image, self.lower_bound, self.upper_bound) > 0).astype(np.uint8)
+
+        # self.width, self.height = int(self.window_image.shape[1]//self.multip), int(self.window_image.shape[0]//self.multip)
+        self.width, self.height = int(self.window_image.shape[1]), int(self.window_image.shape[0])
+        self.center = (int(self.width/2), int(self.height/2+11))
+
+        self.path_width, self.path_height = int(self.window_image.shape[1]//self.multip), int(self.window_image.shape[0]//self.multip)
+        self.path_center = (int(self.path_width/2), int(self.path_height/2+11))
+
         self.hwnd = win32gui.FindWindow(None, self.window_title)
         self.window_rect = win32gui.GetWindowRect(self.hwnd)
         self.window_x = self.window_rect[0]
         self.window_y = self.window_rect[1]
-        
+
         prevTime = 0
         fps = 0
         self.fps_list = []
 
-        
-        while True:            
+
+        while True:
             self.left, self.top, self.right, self.bottom = win32gui.GetWindowRect(self.hwnd)
             top_offset, bottom_offset = 50, 58
             self.window_image = self.cam.grab(region=(self.left+8, self.top+top_offset, self.right-8, self.bottom-bottom_offset))
 
             if self.window_image is not None:
-                
-                
+
+
                 currTime = time.perf_counter()
                 fps = 1 / (currTime - prevTime)
                 self.fps_list.append(fps)
                 prevTime = currTime
 
-                if model_detect:                  
+                if model_detect:
                     results = self.model(classes=[0,1,2,3,4,5,7,9,10,11,12,13,14],device=0,source=self.window_image, conf=min_conf, imgsz=imgsz, stream=True, verbose=False)
-                    
+
                     self.mask = cv2.inRange(cv2.cvtColor(self.window_image, cv2.COLOR_BGR2RGB), self.lower_bound, self.upper_bound)
                     self.masked_cleared = (self.mask > 0).astype(np.uint8)
-                    
+
                     if path:
                         enemies = []
                         boxes = []
@@ -194,7 +212,9 @@ class Mazevil():
                             x = int(self.path_center[0] + optimal_direction[0] * 12)
                             y = int(self.path_center[1] + optimal_direction[1] * 12)
                             self.path_window_image = cv2.line(self.path_window_image, self.path_center, (x,y), [128,128,256],2)
-
+                            
+                            self.shared_data['move'] = tuple(optimal_direction)
+                    
                     if draw:
                         for result in results:
                             self.window_image = result.plot(img = self.window_image)
@@ -207,7 +227,7 @@ class Mazevil():
                     if cv2.waitKey(1) & 0xFF == ord('q'):
                         break
             # if len(self.fps_list) > 100: break
-        
+
         print(sum(self.fps_list)/len(self.fps_list), len(self.fps_list))
         cv2.destroyAllWindows()
 
@@ -223,12 +243,12 @@ class GreedyBFS():
         rows, cols = grid.shape[0], grid.shape[1]
         open_set = []
         heapq.heappush(open_set, (self.manhattan_heuristic(start, goal), start))
-        
+
         came_from = {}
-        
+
         while open_set:
             _, current = heapq.heappop(open_set)
-            
+
             if self.manhattan_heuristic(current, goal) < 5:
                 path = []
                 while current in came_from:
@@ -237,7 +257,7 @@ class GreedyBFS():
                 path.append(start)
                 path.reverse()
                 return path
-            
+
             for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                 neighbor = (current[0] + dx, current[1] + dy)
                 if (0 <= neighbor[0] < rows) and (0 <= neighbor[1] < cols):
@@ -254,13 +274,13 @@ class GreedyBFS():
     def draw_path_on_image(self, image, path: list, color=(0, 255, 0), thickness=2):
         """
         Draws the path on the given image.
-        
+
         Parameters:
         - image: The image on which to draw the path. It should be a numpy ndarray of shape (381, 800, 3).
         - path: The list of points representing the path.
         - color: The color of the path (default is green).
         - thickness: The thickness of the path lines (default is 2).
-        
+
         Returns:
         - The image with the path drawn on it.
         """
@@ -285,4 +305,6 @@ if '__main__'== __name__:
         'min_conf' : 0.4
     }
     agent = Mazevil(model_path=model_path)
+    process = agent.start_movement()
     agent.window_dxcam(**conf)
+    agent.stop_movement(process)
