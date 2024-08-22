@@ -39,7 +39,7 @@ def hold_key(key, hold_time):
 
 time.sleep(1)  # Hold the key for 1 second
 pydirectinput.keyDown('W') # Simulate pressing dwon the Alt key.
-time.sleep(1)  # Hold the key for 1 second
+time.sleep(3)  # Hold the key for 1 second
 pydirectinput.keyUp('W') # Simulate releasing the Alt key.
 
 # pydirectinput.press('S')
