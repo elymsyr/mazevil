@@ -1,0 +1,1 @@
+!yolo task=detect mode=train model=yolov8s.pt data=/content/images/custom_data.yaml epochs=100 imgsz=640 plots=True

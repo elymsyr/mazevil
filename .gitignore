@@ -3,14 +3,14 @@
 Mazevil/
 LabelImg/
 
-*/Data/Images
-*/Data/Test
-*/Data/Train
-*/Data/Labeled\ Images
-*/Model/Trained\ Models
-*/Model/yolov7/
-Processed\ Images/
-yolov7/
+# */Data/Images
+# */Data/Test
+# */Data/Train
+# */Data/Labeled\ Images
+# */Model/Trained\ Models
+# */Model/yolov7/
+# Processed\ Images/
+# yolov7/
 desktop.ini
 
 */Data/Model\ Data
