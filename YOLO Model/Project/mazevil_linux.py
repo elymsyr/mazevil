@@ -19,7 +19,7 @@ class Mazevil():
         self.root = self.display.screen().root
         self.window, self.monitor = self.find_window()
         print(self.monitor)
-        self.max_distance = 220
+        self.max_distance = 200
         self.path_found = []
         self.multip = 2
 
@@ -142,6 +142,8 @@ class Mazevil():
         for box in boxes:
             self.path_window_image = cv2.rectangle(img=self.path_window_image, **box)
         self.path_window_image = cv2.resize(self.path_window_image, (self.path_width, self.path_height), interpolation=cv2.INTER_NEAREST)
+
+        self.path_window_image = cv2.line(self.path_window_image, (self.path_center[0]-10, self.path_center[1]-2), (self.path_center[0]+10, self.path_center[1]-2), (0,255,0), 1)
 
         self.path_window_image = cv2.floodFill(self.path_window_image, None, self.path_center, (250, 0, 0))[1]
         mask = cv2.inRange(self.path_window_image, np.array([250, 0, 0]), np.array([250, 0, 0]))
