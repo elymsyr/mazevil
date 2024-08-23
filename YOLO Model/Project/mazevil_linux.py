@@ -4,6 +4,7 @@ import numpy as np
 from Xlib import X, display
 import mss
 import libclicker
+from pyKey import pressKey, releaseKey
 
 class Mazevil():
     def __init__(self, model_path, window_title = 'Mazevil'):
@@ -18,7 +19,7 @@ class Mazevil():
         self.root = self.display.screen().root
         self.window, self.monitor = self.find_window()
         print(self.monitor)
-        self.max_distance = 150
+        self.max_distance = 220
         self.path_found = []
         self.multip = 2
 
@@ -43,13 +44,13 @@ class Mazevil():
         self.key_map = {
             (1, 1): ('S', 'D'),
             (0, 1): ('S',),
-            (1, 0): ('R',),
+            (1, 0): ('D',),
             (1, -1): ('W', 'D'),
             (0, -1): ('W',),
             (-1, -1): ('W', 'A'),
             (-1, 0): ('A',),
             (-1, 1): ('S', 'A'),
-            (2,2): ('X')
+            (2,2): ()
         }
 
     def capture(self, sct):
@@ -81,45 +82,42 @@ class Mazevil():
     def click(self, x, y):
         libclicker.click(x, y)
 
-    # def update_keys(self):
-    #     # Get the target keys based on the input tuple
-    #     if (not self.shared_data['move'] == (2,2)) and (not self.shared_data['move'] == (3,3)):
-    #         target_keys = self.key_map.get(self.shared_data['move'], ())
+    def update_keys(self):
+        # Get the target keys based on the input tuple
+        if (not self.shared_data['move'] == (2,2)) and (not self.shared_data['move'] == (3,3)):
+            target_keys = self.key_map.get(self.shared_data['move'], ())
+            target_keys = list(target_keys)
+            keys_to_press = [key for key in target_keys if key not in self.current_keys]
+            keys_to_release = [key for key in self.current_keys if key not in target_keys]
 
-    #         # Determine the keys that need to be pressed and released
-    #         keys_to_press = set(target_keys) - self.current_keys
-    #         keys_to_release = self.current_keys - set(target_keys)
+            for key in keys_to_press:
+                pressKey(key)
 
-    #         # Press the keys that need to be pressed
-    #         for key in keys_to_press:
-    #             pydirectinput.keyDown(key)
+            for key in keys_to_release:
+                releaseKey(key)
 
-    #         # Release the keys that need to be released
-    #         for key in keys_to_release:
-    #             pydirectinput.keyUp(key)
+            # Update the current keys set
+            self.current_keys = target_keys
+        elif self.shared_data['move'] == (2,2):
+            for key in ['W', 'A', 'S', 'D']:releaseKey(key)
+            self.shared_data['move'] = (3,3)
 
-    #         # Update the current keys set
-    #         self.current_keys = set(target_keys)
-    #     elif self.shared_data['move'] == (2,2):
-    #         for key in ['W', 'A', 'S', 'D']:pydirectinput.keyUp(key)
-    #         self.shared_data['move'] = (3,3)
+    def move_player(self):
+        while True:
+            # time.sleep(0.1)
+            self.update_keys()
 
-    # def move_player(self):
-    #     while True:
-    #         time.sleep(0.1)
-    #         self.update_keys()
+    def start_movement(self):
+        # Create a process to run the move_player method
+        # Ensure `move_player` does not depend on unpickleable attributes
+        process = multiprocessing.Process(target=self.move_player)
+        process.start()
+        return process
 
-    # def start_movement(self):
-    #     # Create a process to run the move_player method
-    #     # Ensure `move_player` does not depend on unpickleable attributes
-    #     process = multiprocessing.Process(target=self.move_player)
-    #     process.start()
-    #     return process
-
-    # def stop_movement(self, process):
-    #     # Terminate the process
-    #     process.terminate()
-    #     process.join()
+    def stop_movement(self, process):
+        # Terminate the process
+        process.terminate()
+        process.join()
 
     def optimal_direction(self, enemies, open_directions):
         enemy_positions = enemies[:, 1]
@@ -369,6 +367,10 @@ if '__main__'== __name__:
         'min_conf' : 0.4
     }
     agent = Mazevil(model_path=model_path)
-    # process = agent.start_movement()
+    process = None
+    
+    process = agent.start_movement()
+    
     agent.window_linux(**conf)
-    # agent.stop_movement(process)
+    
+    if process: agent.stop_movement(process)
