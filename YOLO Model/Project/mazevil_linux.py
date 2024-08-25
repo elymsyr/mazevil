@@ -1,6 +1,7 @@
 import cv2, time, heapq, multiprocessing
 from ultralytics import YOLO
 import numpy as np
+from collections import deque
 from Xlib import X, display
 import mss
 import libclicker
@@ -150,6 +151,9 @@ class Mazevil():
         masked_cleared = (mask > 0).astype(np.uint8)
         self.path_window_image = np.stack([masked_cleared, masked_cleared, masked_cleared], axis=-1) * 255
 
+        test_path_window_image = cv2.resize(self.path_window_image, (self.path_width//4, self.path_height//4), interpolation=cv2.INTER_NEAREST)
+        cv2.imshow('path',test_path_window_image)
+
     def shoot_closest(self, enemies, shoot):
         target = None
         for enemy in enemies:
@@ -157,8 +161,8 @@ class Mazevil():
             if int(enemy[0]) != 5 and not target:
                 target = enemy[1]
         if shoot and target:
-            screen_x = target[0]+self.monitor["left"]
-            screen_y = target[1]+self.monitor["top"]
+            screen_x = target[0]+self.monitor["left"]+63
+            screen_y = target[1]+self.monitor["top"]+33
             self.click(screen_x, screen_y)
 
     def find_directions(self):
@@ -224,6 +228,7 @@ class Mazevil():
                             enemies = []
                             boxes = []
                             rewards = []
+                            in_maze_room = False
                             for result in results:
                                 # Calculate the top-left corner of the bounding box
                                 for box in result.boxes:
@@ -240,10 +245,16 @@ class Mazevil():
                                             dist = self.path_finding.euclidean_distance((x,y), self.center)
                                             weight = 100 / dist * (4 if int(class_id) == 5 else 3)
                                             enemies.append([int(class_id), [x,y], weight, dist])
+                                            if int(class_id) != 0: in_maze_room = True
                                         elif int(class_id) in [7,9,10,11,13]:
                                             rewards.append((x,y, int(class_id)))
                                         else: continue
-
+                            
+                            if in_maze_room:
+                                enemies = [enemy for enemy in enemies if enemy[0] != 0]
+                                self.max_distance = 400
+                            else: self.max_distance = 200
+                            
                             enemies = [enemy for enemy in enemies if enemy[-1] < self.max_distance]
                             enemies = sorted(enemies, key=lambda x: x[-1])
 
@@ -356,7 +367,73 @@ class GreedyBFS():
                 cv2.line(image, pt1, pt2, color, thickness)
         return image
 
+class BFSPathfinder:
+    def __init__(self, grid):
+        self.grid = grid
+        self.n = len(grid)
+        self.directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Up, Down, Left, Right
+    
+    def find_path(self, start, goal):
+        queue = deque([start])
+        visited = set()
+        visited.add(start)
+        parent = {start: None}
+
+        while queue:
+            current = queue.popleft()
+
+            if current == goal:
+                return self.reconstruct_path(parent, start, goal)
+
+            for direction in self.directions:
+                neighbor = (current[0] + direction[0], current[1] + direction[1])
+
+                if (self.is_valid(neighbor) and neighbor not in visited):
+                    queue.append(neighbor)
+                    visited.add(neighbor)
+                    parent[neighbor] = current
+
+        return None  # No path found
+
+    def is_valid(self, position):
+        row, col = position
+        return (0 <= row < self.n and
+                0 <= col < self.n and
+                self.grid[row][col] == 0)
+
+    def reconstruct_path(self, parent, start, goal):
+        path = []
+        current = goal
+        while current is not None:
+            path.append(current)
+            current = parent[current]
+        return path[::-1]  # Return reversed path
+
+def run_commands():
+    import subprocess
+    try:
+        # Change permissions
+        subprocess.run(['sudo', 'chmod', '666', '/dev/uinput'], 
+                       check=True, 
+                       stdout=subprocess.PIPE, 
+                       stderr=subprocess.PIPE,
+                       text=True)
+        print("Permissions for /dev/uinput changed successfully.")
+
+        # Load uinput module
+        subprocess.run(['sudo', 'modprobe', 'uinput'], 
+                       check=True, 
+                       stdout=subprocess.PIPE, 
+                       stderr=subprocess.PIPE,
+                       text=True)
+        print("uinput module loaded successfully.")
+
+    except subprocess.CalledProcessError as e:
+        print("Error executing command:", e.stderr)
+
+
 if '__main__'== __name__:
+    # run_commands()
     model_name = 'test_1'
     model_path = f'YOLO Model/Model/Trained Models/{model_name}/train/weights/best.pt'
     conf = {
