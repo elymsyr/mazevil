@@ -100,12 +100,13 @@ class Mazevil():
             # Update the current keys set
             self.current_keys = target_keys
         elif self.shared_data['move'] == (2,2):
-            for key in ['W', 'A', 'S', 'D']:releaseKey(key)
+            for key in ['W', 'A', 'S', 'D']:releaseKey(key); self.current_keys=[]
             self.shared_data['move'] = (3,3)
+        print(self.current_keys)
 
     def move_player(self):
         while True:
-            # time.sleep(0.1)
+            time.sleep(0.3)
             self.update_keys()
 
     def start_movement(self):
@@ -243,7 +244,7 @@ class Mazevil():
                                             boxes.append({"pt1": (x1-2, y1),"pt2": (x2+2, y2+2),"color": color,"thickness": -1})
                                         elif int(class_id) in [0,1,4,5,12,14]:
                                             dist = self.path_finding.euclidean_distance((x,y), self.center)
-                                            weight = 100 / dist * (4 if int(class_id) == 5 else 3)
+                                            weight = 100 / dist * (20 if int(class_id) == 5 else 3)
                                             enemies.append([int(class_id), [x,y], weight, dist])
                                             if int(class_id) != 0: in_maze_room = True
                                         elif int(class_id) in [7,9,10,11,13]:
