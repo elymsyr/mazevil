@@ -1,3 +1,27 @@
+def run_commands():
+    import subprocess
+    try:
+        # Change permissions
+        subprocess.run(['sudo', 'chmod', '666', '/dev/uinput'], 
+                       check=True, 
+                       stdout=subprocess.PIPE, 
+                       stderr=subprocess.PIPE,
+                       text=True)
+        print("Permissions for /dev/uinput changed successfully.")
+
+        # Load uinput module
+        subprocess.run(['sudo', 'modprobe', 'uinput'], 
+                       check=True, 
+                       stdout=subprocess.PIPE, 
+                       stderr=subprocess.PIPE,
+                       text=True)
+        print("uinput module loaded successfully.")
+
+    except subprocess.CalledProcessError as e:
+        print("Error executing command:", e.stderr)
+
+# run_commands()
+
 import cv2, time, heapq, multiprocessing
 from ultralytics import YOLO
 import numpy as np
@@ -6,6 +30,52 @@ from Xlib import X, display
 import mss
 import libclicker
 from pyKey import pressKey, releaseKey
+
+def clear_black_points(image, kernel_size=(5, 5), roi_size=(40, 40)):
+    if image is None:
+        raise ValueError("Image not found or unable to read image.")
+    
+    # Get image dimensions
+    height, width = image.shape[:2]
+
+    # Calculate the coordinates for the central ROI
+    start_x = (width - roi_size[0]) // 2
+    start_y = (height - roi_size[1]) // 2
+    end_x = start_x + roi_size[0]
+    end_y = start_y + roi_size[1]
+
+    # Extract the central ROI
+    roi = image[start_y:end_y, start_x:end_x]
+
+    # Define the kernel for dilation
+    kernel = np.ones(kernel_size, np.uint8)
+
+    # Apply dilation to the ROI
+    dilated_roi = cv2.dilate(roi, kernel, iterations=1)
+
+    # Replace the central ROI in the original image with the dilated ROI
+    image[start_y:end_y, start_x:end_x] = dilated_roi
+
+    return image
+
+def is_percentage_black(image, threshold=0.99):
+    if image is None:
+        raise ValueError("Image not found or unable to read image.")
+    
+    # Convert the image to a binary image where black is 1 and others are 0
+    _, binary_image = cv2.threshold(image, 1, 1, cv2.THRESH_BINARY_INV)
+
+    # Calculate the total number of pixels
+    total_pixels = binary_image.size
+
+    # Calculate the number of black pixels
+    black_pixels = np.sum(binary_image == 1)
+
+    # Calculate the proportion of black pixels
+    black_percentage = black_pixels / total_pixels
+
+    # Check if the percentage of black pixels is greater than or equal to the threshold
+    return black_percentage >= threshold
 
 class Mazevil():
     def __init__(self, model_path, window_title = 'Mazevil'):
@@ -23,6 +93,8 @@ class Mazevil():
         self.max_distance = 200
         self.path_found = []
         self.multip = 2
+
+        self.bug_counter = 0
 
         manager = multiprocessing.Manager()
         self.shared_data = manager.dict()
@@ -56,7 +128,7 @@ class Mazevil():
 
     def capture(self, sct):
         img = sct.grab(self.monitor)
-        self.window_image = cv2.cvtColor(np.array(img), cv2.COLOR_BGRA2BGR)
+        return cv2.cvtColor(np.array(img), cv2.COLOR_BGRA2BGR)
 
     def create_monitor(self, window):
         geometry = window.query_tree().parent.get_geometry()
@@ -106,7 +178,7 @@ class Mazevil():
 
     def move_player(self):
         while True:
-            time.sleep(0.3)
+            time.sleep(0.5)
             self.update_keys()
 
     def start_movement(self):
@@ -140,19 +212,21 @@ class Mazevil():
         return best_direction
 
     def path_detection(self, boxes):
-        self.path_window_image = np.stack([self.masked_cleared, self.masked_cleared, self.masked_cleared], axis=-1) * 255
+        test_path_window_image = np.stack([self.masked_cleared, self.masked_cleared, self.masked_cleared], axis=-1) * 255
         for box in boxes:
-            self.path_window_image = cv2.rectangle(img=self.path_window_image, **box)
-        self.path_window_image = cv2.resize(self.path_window_image, (self.path_width, self.path_height), interpolation=cv2.INTER_NEAREST)
+            test_path_window_image = cv2.rectangle(img=test_path_window_image, **box)
+        test_path_window_image = cv2.resize(test_path_window_image, (self.path_width, self.path_height), interpolation=cv2.INTER_NEAREST)
 
-        self.path_window_image = cv2.line(self.path_window_image, (self.path_center[0]-10, self.path_center[1]-2), (self.path_center[0]+10, self.path_center[1]-2), (0,255,0), 1)
+        test_path_window_image = cv2.line(test_path_window_image, (self.path_center[0]-10, self.path_center[1]-2), (self.path_center[0]+10, self.path_center[1]-2), (0,255,0), 1)
 
-        self.path_window_image = cv2.floodFill(self.path_window_image, None, self.path_center, (250, 0, 0))[1]
-        mask = cv2.inRange(self.path_window_image, np.array([250, 0, 0]), np.array([250, 0, 0]))
+        test_path_window_image = cv2.floodFill(test_path_window_image, None, self.path_center, (250, 0, 0))[1]
+        mask = cv2.inRange(test_path_window_image, np.array([250, 0, 0]), np.array([250, 0, 0]))
         masked_cleared = (mask > 0).astype(np.uint8)
-        self.path_window_image = np.stack([masked_cleared, masked_cleared, masked_cleared], axis=-1) * 255
+        test_path_window_image = np.stack([masked_cleared, masked_cleared, masked_cleared], axis=-1) * 255
 
+        if not is_percentage_black(test_path_window_image): self.path_window_image = test_path_window_image
 
+        self.path_window_image = clear_black_points(self.path_window_image)
 
         # test_path_window_image = cv2.resize(self.path_window_image, (self.path_width//4, self.path_height//4), interpolation=cv2.INTER_NEAREST)
         # cv2.imshow('path',test_path_window_image)
@@ -166,6 +240,7 @@ class Mazevil():
         if shoot and target:
             screen_x = target[0]+self.monitor["left"]+63
             screen_y = target[1]+self.monitor["top"]+33
+            self.bug_counter += 1
             self.click(screen_x, screen_y)
 
     def find_directions(self):
@@ -194,7 +269,7 @@ class Mazevil():
             self.path_window_image = None
 
             # self.window_image = self.cam.grab(region=(self.left+8, self.top+50, self.right-8, self.bottom-58))
-            self.capture(sct)
+            self.window_image = self.capture(sct)
             self.mask = cv2.inRange(cv2.cvtColor(self.window_image, cv2.COLOR_BGR2RGB), self.lower_bound, self.upper_bound)
             self.masked_cleared = (self.mask > 0).astype(np.uint8)
 
@@ -212,8 +287,7 @@ class Mazevil():
             self.fps_list = []
 
             while True:
-                self.capture(sct)
-
+                self.window_image = self.capture(sct)
                 if self.window_image is not None:
 
                     currTime = time.perf_counter()
@@ -246,7 +320,7 @@ class Mazevil():
                                             boxes.append({"pt1": (x1-2, y1),"pt2": (x2+2, y2+2),"color": color,"thickness": -1})
                                         elif int(class_id) in [0,1,4,5,12,14]:
                                             dist = self.path_finding.euclidean_distance((x,y), self.center)
-                                            weight = 100 / dist * (40 if int(class_id) == 5 else 5)
+                                            weight = 100 / dist * (40 if int(class_id) == 5 else 2)
                                             enemies.append([int(class_id), [x,y], weight, dist])
                                             if int(class_id) != 0: in_maze_room = True
                                         elif int(class_id) in [7,9,10,11,13]:
@@ -273,8 +347,8 @@ class Mazevil():
                                 enemies_array = np.array(enemies, dtype="object")
                                 optimal_direction = self.optimal_direction(enemies_array, np.array(open_directions) if len(open_directions)>0 else self.directions)
                             elif self.CLICKED:
-                                # win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, self.window_x, self.window_y, 0, 0)
                                 self.CLICKED = False
+                            elif self.bug_counter > 0: self.bug_counter -= 1
 
                             for direction in open_directions:
                                 x = int(self.path_center[0] + direction[0] * 12)
@@ -304,7 +378,7 @@ class Mazevil():
                         cv2.imshow(f'{self.window_title} YOLOV8 PATH', self.path_window_image)
                         if cv2.waitKey(1) & 0xFF == ord('q'):
                             break
-                # if len(self.fps_list) > 100: break
+                if self.bug_counter > 1000: break
 
         print(sum(self.fps_list)/len(self.fps_list), len(self.fps_list))
         cv2.destroyAllWindows()
@@ -412,31 +486,7 @@ class BFSPathfinder:
             current = parent[current]
         return path[::-1]  # Return reversed path
 
-def run_commands():
-    import subprocess
-    try:
-        # Change permissions
-        subprocess.run(['sudo', 'chmod', '666', '/dev/uinput'], 
-                       check=True, 
-                       stdout=subprocess.PIPE, 
-                       stderr=subprocess.PIPE,
-                       text=True)
-        print("Permissions for /dev/uinput changed successfully.")
-
-        # Load uinput module
-        subprocess.run(['sudo', 'modprobe', 'uinput'], 
-                       check=True, 
-                       stdout=subprocess.PIPE, 
-                       stderr=subprocess.PIPE,
-                       text=True)
-        print("uinput module loaded successfully.")
-
-    except subprocess.CalledProcessError as e:
-        print("Error executing command:", e.stderr)
-
-
 if '__main__'== __name__:
-    # run_commands()
     model_name = 'test_1'
     model_path = f'YOLO Model/Model/Trained Models/{model_name}/train/weights/best.pt'
     conf = {
