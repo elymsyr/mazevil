@@ -152,8 +152,10 @@ class Mazevil():
         masked_cleared = (mask > 0).astype(np.uint8)
         self.path_window_image = np.stack([masked_cleared, masked_cleared, masked_cleared], axis=-1) * 255
 
-        test_path_window_image = cv2.resize(self.path_window_image, (self.path_width//4, self.path_height//4), interpolation=cv2.INTER_NEAREST)
-        cv2.imshow('path',test_path_window_image)
+
+
+        # test_path_window_image = cv2.resize(self.path_window_image, (self.path_width//4, self.path_height//4), interpolation=cv2.INTER_NEAREST)
+        # cv2.imshow('path',test_path_window_image)
 
     def shoot_closest(self, enemies, shoot):
         target = None
@@ -244,7 +246,7 @@ class Mazevil():
                                             boxes.append({"pt1": (x1-2, y1),"pt2": (x2+2, y2+2),"color": color,"thickness": -1})
                                         elif int(class_id) in [0,1,4,5,12,14]:
                                             dist = self.path_finding.euclidean_distance((x,y), self.center)
-                                            weight = 100 / dist * (20 if int(class_id) == 5 else 3)
+                                            weight = 100 / dist * (40 if int(class_id) == 5 else 5)
                                             enemies.append([int(class_id), [x,y], weight, dist])
                                             if int(class_id) != 0: in_maze_room = True
                                         elif int(class_id) in [7,9,10,11,13]:
@@ -253,7 +255,7 @@ class Mazevil():
                             
                             if in_maze_room:
                                 enemies = [enemy for enemy in enemies if enemy[0] != 0]
-                                self.max_distance = 400
+                                self.max_distance = 600
                             else: self.max_distance = 200
                             
                             enemies = [enemy for enemy in enemies if enemy[-1] < self.max_distance]
