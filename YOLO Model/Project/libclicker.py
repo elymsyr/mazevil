@@ -8,8 +8,6 @@ ANYTHING ELSE.
 import uinput
 import time
 import string
-import os, sys
-from typing import Union
 
 keys = [uinput.KEY_LEFTSHIFT,
     uinput.KEY_SPACE,

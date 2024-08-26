@@ -1,59 +1,16 @@
-def run_commands():
-    import subprocess
-    try:
-        # Change permissions
-        subprocess.run(['sudo', 'chmod', '666', '/dev/uinput'], 
-                       check=True, 
-                       stdout=subprocess.PIPE, 
-                       stderr=subprocess.PIPE,
-                       text=True)
-        print("Permissions for /dev/uinput changed successfully.")
-
-        # Load uinput module
-        subprocess.run(['sudo', 'modprobe', 'uinput'], 
-                       check=True, 
-                       stdout=subprocess.PIPE, 
-                       stderr=subprocess.PIPE,
-                       text=True)
-        print("uinput module loaded successfully.")
-
-    except subprocess.CalledProcessError as e:
-        print("Error executing command:", e.stderr)
-
-# run_commands()
-
+try:
+    import libclicker
+except:
+    from linclicker_cmod import run_commands
+    run_commands()
+    import libclicker
 import cv2, time, heapq, multiprocessing
 from ultralytics import YOLO
 import numpy as np
 from collections import deque
 from Xlib import X, display
 import mss
-import libclicker
 from pyKey import pressKey, releaseKey
-import matplotlib.pyplot as plt
-
-def find_farthest_point(binary_array):
-    # Get the indices of all points with value 1
-    points = np.argwhere(binary_array == 1)
-    
-    if len(points) <= 1:
-        # If there's only one or no point, return the point itself or None
-        return points[0] if len(points) == 1 else None
-    
-    max_distance = 0
-    farthest_point = points[0]
-    
-    # Compare each point to every other point
-    for i in range(len(points)):
-        for j in range(i + 1, len(points)):
-            # Calculate Euclidean distance between points[i] and points[j]
-            distance = np.linalg.norm(points[i] - points[j])
-            # Update the farthest point if this distance is the largest so far
-            if distance > max_distance:
-                max_distance = distance
-                farthest_point = points[j]
-    
-    return tuple(farthest_point)
 
 class Mazevil():
     def __init__(self, model_path, window_title = 'Mazevil'):
@@ -208,10 +165,6 @@ class Mazevil():
                         if distance < min_distance:
                             min_distance = distance
                             closest_neighbor = (ny,nx)
-
-            # while np.array_equal(grid[closest_neighbor[1], closest_neighbor[0]], [0, 0, 0]):
-            #     closest_neighbor = self.find_closest_non_zero_neighbor(grid)
-            
             return closest_neighbor
         return self.path_center
 
@@ -228,25 +181,9 @@ class Mazevil():
         test_path_window_image = cv2.floodFill(test_path_window_image, None, fl_point, (250, 0, 0))[1]
         mask = cv2.inRange(test_path_window_image, np.array([250, 0, 0]), np.array([250, 0, 0]))
         masked_cleared = (mask > 0).astype(np.uint8)
-        
-        far_point = find_farthest_point(masked_cleared)
-        
         test_path_window_image = np.stack([masked_cleared, masked_cleared, masked_cleared], axis=-1) * 255
 
-        # far_point = self.bfs(test_path_window_image)
-        print(far_point)
-        if far_point: cv2.circle(test_path_window_image, far_point, 2, (0,255,20), 4)
-
         self.path_window_image = test_path_window_image
-
-    # def bfs(self, image):
-    #     # bfs_path_image = cv2.resize(image, (self.path_width//4, self.path_height//4), interpolation=cv2.INTER_NEAREST)
-    #     # cv2.imshow('path',bfs_path_image)        
-    #     mask = cv2.inRange(image, np.array([250, 0, 0]), np.array([250, 0, 0]))
-    #     masked_cleared = (mask > 0).astype(np.uint8)
-    #     # print(masked_cleared[0:10, 0:10])
-        
-    #     return far_point
     
     def shoot_closest(self, enemies, shoot):
         target = None
@@ -280,6 +217,9 @@ class Mazevil():
 
         return open_directions
 
+    def traverse_map(self):
+        pass
+
     def window_linux(self, shoot: bool = False, draw: bool = True, imgsz: int = 480, show_result:bool = True, path: bool = True, model_detect: bool = True, min_conf: float = 0.4):
         with mss.mss() as sct:
             
@@ -296,8 +236,6 @@ class Mazevil():
 
             self.path_width, self.path_height = int(self.window_image.shape[1]//self.multip), int(self.window_image.shape[0]//self.multip)
             self.path_center = (int(self.path_width/2), int(self.path_height/2+11))
-
-            # print(self.width, self.height, self.center, self.path_width, self.path_center)
 
             prevTime = 0
             fps = 0
