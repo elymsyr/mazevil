@@ -40,6 +40,7 @@ class Mazevil():
         self.shared_data['current_keys'] = set()
 
         self.fps_list = []
+        self.move_signals = []
         
         self.open_directions = None
         self.last_direction = None
@@ -243,11 +244,12 @@ class Mazevil():
                 self.shared_data['move'] = self.last_direction
             else:
                 if not np.any(np.all(self.open_directions == self.shared_data['move'], axis=1)):
-                    save_direction = self.shared_data['move']
+                    save_direction = (self.shared_data['move'][0]*-1, self.shared_data['move'][1]*-1)
+                    if save_direction != (-2,-2) or save_direction != (-3,-3):
+                        self.last_direction = save_direction
                     self.shared_data['move'] = get_direction(self, self.last_direction)
-                    if save_direction != (2,2) or save_direction != (3,3): self.last_direction = save_direction
 
-    def window_linux(self, shoot: bool = False, draw: bool = True, imgsz: int = 480, show_result:bool = True, path: bool = True, model_detect: bool = True, min_conf: float = 0.4):
+    def window_linux(self, traverse: bool = False, shoot: bool = False, draw: bool = True, imgsz: int = 480, show_result:bool = True, path: bool = True, model_detect: bool = True, min_conf: float = 0.4):
         with mss.mss() as sct:
             
             self.path_window_image = None
@@ -327,7 +329,11 @@ class Mazevil():
                             if enemies and self.TRAVERS:
                                 self.TRAVERS = False
                                 self.release_keys()
-                            if not enemies: self.TRAVERS = True
+                            if not enemies and not self.TRAVERS:
+                                self.TRAVERS = True
+                                screen_x = 365+self.monitor["left"]+63
+                                screen_y = 370+self.monitor["top"]+33
+                                self.click(screen_x, screen_y)
 
                             if enemies:
                                 self.shoot_closest(enemies=enemies, shoot=shoot)
@@ -339,13 +345,13 @@ class Mazevil():
                             for direction in list(self.open_directions):
                                 x = int(self.path_center[0] + direction[0] * 16)
                                 y = int(self.path_center[1] + direction[1] * 16)
-                                self.path_window_image = cv2.line(self.path_window_image, self.path_center, (x,y), [10,200,138],2)
+                                self.path_window_image = cv2.line(self.path_window_image, self.path_center, (x,y), [10,20,138],1)
 
                                 x = int(self.center[0] + direction[0] * 16 * self.multip)
                                 y = int(self.center[1] + direction[1] * 16 * self.multip)
-                                self.window_image = cv2.line(self.window_image, self.center, (x,y), [10,20,138],1)
+                                self.window_image = cv2.line(self.window_image, self.center, (x,y), [100,200,138],1)
                                 
-                            self.traverse_map()
+                            if traverse: self.traverse_map()
                             
                             if enemies:
                                 x = int(self.path_center[0] + optimal_direction[0] * 6)
@@ -356,25 +362,24 @@ class Mazevil():
                                 y = int(self.center[1] + optimal_direction[1] * 18)
                                 self.window_image = cv2.line(self.window_image, self.center, (x,y), [128,128,256],2)
 
-                                self.shared_data['move'] = tuple(optimal_direction) if enemies[0][-1] < self.max_distance//2 else (2,2)
+                                self.shared_data['move'] = tuple(optimal_direction) if enemies[0][-1] < self.max_distance//1.3 else (2,2)
                             # elif (not self.shared_data['move'] == (2,2)) and (not self.shared_data['move'] == (3,3)): self.shared_data['move'] = (2,2)
                         if draw:
                             for result in results:
                                 self.window_image = result.plot(img = self.window_image)
 
                     if show_result:
-                        cv2.putText(self.window_image, f"FPS: {int(fps) if abs(self.fps_list[-1] - fps) > 1 else int(self.fps_list[-1])}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
-                        cv2.putText(self.window_image, f"Traverse: {self.TRAVERS}", (10, self.height-30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
-                        cv2.putText(self.window_image, f"Last Direction: {self.key_map[self.last_direction] if self.last_direction is not None else 'none'}", (10, self.height-30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+                        cv2.putText(self.window_image, f"FPS: {int(fps) if abs(self.fps_list[-1] - fps) > 1 else int(self.fps_list[-1])}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+                        cv2.putText(self.window_image, f"Traverse: {self.TRAVERS}", (10, self.height-20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                        cv2.putText(self.window_image, f"Last Direction: {self.key_map[self.last_direction] if self.last_direction is not None else 'none'}", (10, self.height-40), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                         cv2.imshow(f'{self.window_title} YOLOV8 IMAGE', self.window_image)
                         
                         # cv2.putText(self.path_window_image, f"FPS: {int(fps) if abs(self.fps_list[-1] - fps) > 1 else int(self.fps_list[-1])}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                         # cv2.imshow(f'{self.window_title} YOLOV8 PATH', self.path_window_image)
-                        key = cv2.waitKey(1)
-                        if key & 0xFF == ord('q'):
+                        if cv2.waitKey(1) & 0xFF == ord('q'):
                             break
-                        elif key == -1 and cv2.getWindowProperty('Window', cv2.WND_PROP_VISIBLE) == 0: break
                 if self.bug_counter > 1000: break
+                if len(self.fps_list) > 1000: break
 
         print(sum(self.fps_list)/len(self.fps_list), len(self.fps_list))
         self.release_keys()
@@ -492,9 +497,10 @@ if '__main__'== __name__:
         'show_result' : True,
         'shoot' : False,
         'draw' : True,
+        'traverse': True,
         'path' : True,
         'model_detect': True,
-        'min_conf' : 0.4
+        'min_conf' : 0.4,
     }
     agent = Mazevil(model_path=model_path)
     process = None
