@@ -30,52 +30,30 @@ from Xlib import X, display
 import mss
 import libclicker
 from pyKey import pressKey, releaseKey
+import matplotlib.pyplot as plt
 
-def clear_black_points(image, kernel_size=(5, 5), roi_size=(40, 40)):
-    if image is None:
-        raise ValueError("Image not found or unable to read image.")
+def find_farthest_point(binary_array):
+    # Get the indices of all points with value 1
+    points = np.argwhere(binary_array == 1)
     
-    # Get image dimensions
-    height, width = image.shape[:2]
-
-    # Calculate the coordinates for the central ROI
-    start_x = (width - roi_size[0]) // 2
-    start_y = (height - roi_size[1]) // 2
-    end_x = start_x + roi_size[0]
-    end_y = start_y + roi_size[1]
-
-    # Extract the central ROI
-    roi = image[start_y:end_y, start_x:end_x]
-
-    # Define the kernel for dilation
-    kernel = np.ones(kernel_size, np.uint8)
-
-    # Apply dilation to the ROI
-    dilated_roi = cv2.dilate(roi, kernel, iterations=1)
-
-    # Replace the central ROI in the original image with the dilated ROI
-    image[start_y:end_y, start_x:end_x] = dilated_roi
-
-    return image
-
-def is_percentage_black(image, threshold=0.99):
-    if image is None:
-        raise ValueError("Image not found or unable to read image.")
+    if len(points) <= 1:
+        # If there's only one or no point, return the point itself or None
+        return points[0] if len(points) == 1 else None
     
-    # Convert the image to a binary image where black is 1 and others are 0
-    _, binary_image = cv2.threshold(image, 1, 1, cv2.THRESH_BINARY_INV)
-
-    # Calculate the total number of pixels
-    total_pixels = binary_image.size
-
-    # Calculate the number of black pixels
-    black_pixels = np.sum(binary_image == 1)
-
-    # Calculate the proportion of black pixels
-    black_percentage = black_pixels / total_pixels
-
-    # Check if the percentage of black pixels is greater than or equal to the threshold
-    return black_percentage >= threshold
+    max_distance = 0
+    farthest_point = points[0]
+    
+    # Compare each point to every other point
+    for i in range(len(points)):
+        for j in range(i + 1, len(points)):
+            # Calculate Euclidean distance between points[i] and points[j]
+            distance = np.linalg.norm(points[i] - points[j])
+            # Update the farthest point if this distance is the largest so far
+            if distance > max_distance:
+                max_distance = distance
+                farthest_point = points[j]
+    
+    return tuple(farthest_point)
 
 class Mazevil():
     def __init__(self, model_path, window_title = 'Mazevil'):
@@ -86,10 +64,12 @@ class Mazevil():
         self.path_finding = GreedyBFS()
         self.model: YOLO = YOLO(model_path)
 
+        self.path = None
+
         self.display = display.Display()
         self.root = self.display.screen().root
         self.window, self.monitor = self.find_window()
-        print(self.monitor)
+
         self.max_distance = 200
         self.path_found = []
         self.multip = 2
@@ -174,7 +154,7 @@ class Mazevil():
         elif self.shared_data['move'] == (2,2):
             for key in ['W', 'A', 'S', 'D']:releaseKey(key); self.current_keys=[]
             self.shared_data['move'] = (3,3)
-        print(self.current_keys)
+        if len(self.current_keys) > 0: print(self.current_keys)
 
     def move_player(self):
         while True:
@@ -211,26 +191,63 @@ class Mazevil():
 
         return best_direction
 
+    def find_closest_non_zero_neighbor(self, grid, point = None):
+        y,x = self.path_center if not point else point
+        if np.array_equal(grid[x, y], [255,255,255]):
+            # Define the neighbors' relative positions
+            neighbors = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
+            min_distance = float('inf')
+            closest_neighbor = None
+
+            for dx, dy in neighbors:
+                nx, ny = x + dx, y + dy
+                # Check if the neighbor is within the grid bounds
+                if 0 <= nx < grid.shape[0] and 0 <= ny < grid.shape[1]:
+                    if not np.array_equal(grid[nx, ny], [255,255,255]):
+                        distance = np.linalg.norm(np.array([nx, ny]) - np.array([x, y]))
+                        if distance < min_distance:
+                            min_distance = distance
+                            closest_neighbor = (ny,nx)
+
+            # while np.array_equal(grid[closest_neighbor[1], closest_neighbor[0]], [0, 0, 0]):
+            #     closest_neighbor = self.find_closest_non_zero_neighbor(grid)
+            
+            return closest_neighbor
+        return self.path_center
+
     def path_detection(self, boxes):
         test_path_window_image = np.stack([self.masked_cleared, self.masked_cleared, self.masked_cleared], axis=-1) * 255
         for box in boxes:
             test_path_window_image = cv2.rectangle(img=test_path_window_image, **box)
         test_path_window_image = cv2.resize(test_path_window_image, (self.path_width, self.path_height), interpolation=cv2.INTER_NEAREST)
 
-        test_path_window_image = cv2.line(test_path_window_image, (self.path_center[0]-10, self.path_center[1]-2), (self.path_center[0]+10, self.path_center[1]-2), (0,255,0), 1)
+        test_path_window_image = cv2.line(test_path_window_image, (self.path_center[0]-10, self.path_center[1]-5), (self.path_center[0]+10, self.path_center[1]-5), (0,255,0), 1)
 
-        test_path_window_image = cv2.floodFill(test_path_window_image, None, self.path_center, (250, 0, 0))[1]
+        fl_point = self.find_closest_non_zero_neighbor(test_path_window_image)
+
+        test_path_window_image = cv2.floodFill(test_path_window_image, None, fl_point, (250, 0, 0))[1]
         mask = cv2.inRange(test_path_window_image, np.array([250, 0, 0]), np.array([250, 0, 0]))
         masked_cleared = (mask > 0).astype(np.uint8)
+        
+        far_point = find_farthest_point(masked_cleared)
+        
         test_path_window_image = np.stack([masked_cleared, masked_cleared, masked_cleared], axis=-1) * 255
 
-        if not is_percentage_black(test_path_window_image): self.path_window_image = test_path_window_image
+        # far_point = self.bfs(test_path_window_image)
+        print(far_point)
+        if far_point: cv2.circle(test_path_window_image, far_point, 2, (0,255,20), 4)
 
-        self.path_window_image = clear_black_points(self.path_window_image)
+        self.path_window_image = test_path_window_image
 
-        # test_path_window_image = cv2.resize(self.path_window_image, (self.path_width//4, self.path_height//4), interpolation=cv2.INTER_NEAREST)
-        # cv2.imshow('path',test_path_window_image)
-
+    # def bfs(self, image):
+    #     # bfs_path_image = cv2.resize(image, (self.path_width//4, self.path_height//4), interpolation=cv2.INTER_NEAREST)
+    #     # cv2.imshow('path',bfs_path_image)        
+    #     mask = cv2.inRange(image, np.array([250, 0, 0]), np.array([250, 0, 0]))
+    #     masked_cleared = (mask > 0).astype(np.uint8)
+    #     # print(masked_cleared[0:10, 0:10])
+        
+    #     return far_point
+    
     def shoot_closest(self, enemies, shoot):
         target = None
         for enemy in enemies:
@@ -247,10 +264,10 @@ class Mazevil():
         open_directions = []
         check_up = 1
         for direction in self.directions:
-            x = int(self.path_center[0] + direction[0] * 12)
-            x1 = int(self.path_center[0] + direction[0] * 9)
-            y = int(self.path_center[1] + direction[1] * 12)
-            y1 = int(self.path_center[1] + direction[1] * 9)
+            x = int(self.path_center[0] + direction[0] * 16)
+            x1 = int(self.path_center[0] + direction[0] * 8)
+            y = int(self.path_center[1] + direction[1] * 16)
+            y1 = int(self.path_center[1] + direction[1] * 8)
             if np.array_equal(self.path_window_image[y, x], [255,255,255])\
                 and np.array_equal(self.path_window_image[y1, x1], [255,255,255]):
                 if np.array_equal(direction, [0,-1]): continue
@@ -351,8 +368,8 @@ class Mazevil():
                             elif self.bug_counter > 0: self.bug_counter -= 1
 
                             for direction in open_directions:
-                                x = int(self.path_center[0] + direction[0] * 12)
-                                y = int(self.path_center[1] + direction[1] * 12)
+                                x = int(self.path_center[0] + direction[0] * 16)
+                                y = int(self.path_center[1] + direction[1] * 16)
                                 self.path_window_image = cv2.line(self.path_window_image, self.path_center, (x,y), [10,20,138],1)
 
                             if enemies:
@@ -366,7 +383,6 @@ class Mazevil():
 
                                 self.shared_data['move'] = tuple(optimal_direction) if enemies[0][-1] < self.max_distance//2 else (2,2)
                             elif (not self.shared_data['move'] == (2,2)) and (not self.shared_data['move'] == (3,3)): self.shared_data['move'] = (2,2)
-
                         if draw:
                             for result in results:
                                 self.window_image = result.plot(img = self.window_image)
@@ -444,41 +460,42 @@ class GreedyBFS():
                 cv2.line(image, pt1, pt2, color, thickness)
         return image
 
-class BFSPathfinder:
-    def __init__(self, grid):
-        self.grid = grid
-        self.n = len(grid)
+class BFSPathfinder():
+    def __init__(self, start):
+        self.start = start
+
         self.directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Up, Down, Left, Right
     
-    def find_path(self, start, goal):
-        queue = deque([start])
+    def find_path(self, goal, grid):
+        n = len(grid)
+        queue = deque([self.start])
         visited = set()
-        visited.add(start)
-        parent = {start: None}
+        visited.add(self.start)
+        parent = {self.start: None}
 
         while queue:
             current = queue.popleft()
 
             if current == goal:
-                return self.reconstruct_path(parent, start, goal)
+                return self.reconstruct_path(parent, goal)
 
             for direction in self.directions:
                 neighbor = (current[0] + direction[0], current[1] + direction[1])
 
-                if (self.is_valid(neighbor) and neighbor not in visited):
+                if (self.is_valid(neighbor, grid, n) and neighbor not in visited):
                     queue.append(neighbor)
                     visited.add(neighbor)
                     parent[neighbor] = current
 
         return None  # No path found
 
-    def is_valid(self, position):
+    def is_valid(self, position, grid, n):
         row, col = position
-        return (0 <= row < self.n and
-                0 <= col < self.n and
-                self.grid[row][col] == 0)
+        return (0 <= row < n and
+                0 <= col < n and
+                grid[row][col] == 0)
 
-    def reconstruct_path(self, parent, start, goal):
+    def reconstruct_path(self, parent, goal):
         path = []
         current = goal
         while current is not None:
