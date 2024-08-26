@@ -10,6 +10,7 @@ import numpy as np
 from collections import deque
 from Xlib import X, display
 import mss
+from random import choice
 from pyKey import pressKey, releaseKey
 
 class Mazevil():
@@ -36,8 +37,14 @@ class Mazevil():
         manager = multiprocessing.Manager()
         self.shared_data = manager.dict()
         self.shared_data['move'] = (2,2)
+        self.shared_data['current_keys'] = set()
 
         self.fps_list = []
+        
+        self.open_directions = None
+        self.last_direction = None
+        self.current_direction = None
+        self.TRAVERS = False
 
         self.directions = np.array([
             [1, 1],   # Down-Right
@@ -49,8 +56,12 @@ class Mazevil():
             [-1, 0],  # Left
             [-1, 1],  # Down-Left
         ], dtype=np.float64)
-
-        self.current_keys = set()
+        self.random_walk_directions = np.array([
+            [0, 1],   # Down
+            [1, 0],   # Right
+            [0, -1],  # Up
+            [-1, 0],  # Left
+        ], dtype=np.float64)
         self.key_map = {
             (1, 1): ('S', 'D'),
             (0, 1): ('S',),
@@ -60,7 +71,8 @@ class Mazevil():
             (-1, -1): ('W', 'A'),
             (-1, 0): ('A',),
             (-1, 1): ('S', 'A'),
-            (2,2): ()
+            (2,2): 'None',
+            (3,3): 'None'
         }
 
     def capture(self, sct):
@@ -92,13 +104,17 @@ class Mazevil():
     def click(self, x, y):
         libclicker.click(x, y)
 
+    def release_keys(self):
+        for key in ['W', 'A', 'S', 'D']:releaseKey(key); self.shared_data['current_keys']=[]
+        self.shared_data['move'] = (3,3)        
+
     def update_keys(self):
         # Get the target keys based on the input tuple
         if (not self.shared_data['move'] == (2,2)) and (not self.shared_data['move'] == (3,3)):
             target_keys = self.key_map.get(self.shared_data['move'], ())
             target_keys = list(target_keys)
-            keys_to_press = [key for key in target_keys if key not in self.current_keys]
-            keys_to_release = [key for key in self.current_keys if key not in target_keys]
+            keys_to_press = [key for key in target_keys if key not in self.shared_data['current_keys']]
+            keys_to_release = [key for key in self.shared_data['current_keys'] if key not in target_keys]
 
             for key in keys_to_press:
                 pressKey(key)
@@ -107,11 +123,10 @@ class Mazevil():
                 releaseKey(key)
 
             # Update the current keys set
-            self.current_keys = target_keys
+            self.shared_data['current_keys'] = target_keys
         elif self.shared_data['move'] == (2,2):
-            for key in ['W', 'A', 'S', 'D']:releaseKey(key); self.current_keys=[]
-            self.shared_data['move'] = (3,3)
-        if len(self.current_keys) > 0: print(self.current_keys)
+            self.release_keys()
+        if len(list(self.shared_data['current_keys'])) > 0: print(self.shared_data['current_keys'])
 
     def move_player(self):
         while True:
@@ -199,7 +214,6 @@ class Mazevil():
 
     def find_directions(self):
         open_directions = []
-        check_up = 1
         for direction in self.directions:
             x = int(self.path_center[0] + direction[0] * 16)
             x1 = int(self.path_center[0] + direction[0] * 8)
@@ -207,18 +221,31 @@ class Mazevil():
             y1 = int(self.path_center[1] + direction[1] * 8)
             if np.array_equal(self.path_window_image[y, x], [255,255,255])\
                 and np.array_equal(self.path_window_image[y1, x1], [255,255,255]):
-                if np.array_equal(direction, [0,-1]): continue
-                else:
                     open_directions.append(direction)
-            elif np.array_equal(direction, [-1, -1]) or np.array_equal(direction, [1, -1]):
-                check_up -= 1
-        if check_up > 0:
-            open_directions.append([0, -1])
 
-        return open_directions
+        return np.array(open_directions)
 
     def traverse_map(self):
-        pass
+        def intersection(array1, array2):
+            intersection = np.intersect1d(array1.view([('', array1.dtype)] * array1.shape[1]), 
+                                        array2.view([('', array2.dtype)] * array2.shape[1]))
+            intersection_2d = intersection.view(array1.dtype).reshape(-1, array1.shape[1])
+            return intersection_2d        
+        
+        def get_direction(self: Mazevil, last_direction = None):
+            new_direction = intersection(self.open_directions, self.random_walk_directions if last_direction is None else self.random_walk_directions[~np.all(self.random_walk_directions == last_direction, axis=1)])
+            d_choice = choice(new_direction if new_direction.size>0 else self.random_walk_directions)
+            return tuple(d_choice)
+        
+        if self.TRAVERS == True and self.open_directions.size > 0:
+            if self.last_direction is None:
+                self.last_direction = get_direction(self)
+                self.shared_data['move'] = self.last_direction
+            else:
+                if not np.any(np.all(self.open_directions == self.shared_data['move'], axis=1)):
+                    save_direction = self.shared_data['move']
+                    self.shared_data['move'] = get_direction(self, self.last_direction)
+                    if save_direction != (2,2) or save_direction != (3,3): self.last_direction = save_direction
 
     def window_linux(self, shoot: bool = False, draw: bool = True, imgsz: int = 480, show_result:bool = True, path: bool = True, model_detect: bool = True, min_conf: float = 0.4):
         with mss.mss() as sct:
@@ -284,57 +311,73 @@ class Mazevil():
                             
                             if in_maze_room:
                                 enemies = [enemy for enemy in enemies if enemy[0] != 0]
-                                self.max_distance = 600
-                            else: self.max_distance = 200
+                                self.max_distance = 500
+                            else: self.max_distance = 100
                             
                             enemies = [enemy for enemy in enemies if enemy[-1] < self.max_distance]
                             enemies = sorted(enemies, key=lambda x: x[-1])
 
                             self.path_detection(boxes = boxes)
 
-                            open_directions = self.find_directions()
+                            self.open_directions = self.find_directions()
 
                             self.window_image = cv2.circle(self.window_image, self.center, self.max_distance, (10,20,128), 1)
                             self.path_window_image = cv2.circle(self.path_window_image, self.path_center, int(self.max_distance//self.multip), (10,20,128), 1)
 
+                            if enemies and self.TRAVERS:
+                                self.TRAVERS = False
+                                self.release_keys()
+                            if not enemies: self.TRAVERS = True
+
                             if enemies:
                                 self.shoot_closest(enemies=enemies, shoot=shoot)
                                 enemies_array = np.array(enemies, dtype="object")
-                                optimal_direction = self.optimal_direction(enemies_array, np.array(open_directions) if len(open_directions)>0 else self.directions)
+                                optimal_direction = self.optimal_direction(enemies_array, self.open_directions if self.open_directions.size>0 else self.directions)
                             elif self.CLICKED:
                                 self.CLICKED = False
                             elif self.bug_counter > 0: self.bug_counter -= 1
-
-                            for direction in open_directions:
+                            for direction in list(self.open_directions):
                                 x = int(self.path_center[0] + direction[0] * 16)
                                 y = int(self.path_center[1] + direction[1] * 16)
-                                self.path_window_image = cv2.line(self.path_window_image, self.path_center, (x,y), [10,20,138],1)
+                                self.path_window_image = cv2.line(self.path_window_image, self.path_center, (x,y), [10,200,138],2)
 
+                                x = int(self.center[0] + direction[0] * 16 * self.multip)
+                                y = int(self.center[1] + direction[1] * 16 * self.multip)
+                                self.window_image = cv2.line(self.window_image, self.center, (x,y), [10,20,138],1)
+                                
+                            self.traverse_map()
+                            
                             if enemies:
-                                # x = int(self.path_center[0] + optimal_direction[0] * 12)
-                                # y = int(self.path_center[1] + optimal_direction[1] * 12)
-                                # self.path_window_image = cv2.line(self.path_window_image, self.path_center, (x,y), [128,128,256],2)
+                                x = int(self.path_center[0] + optimal_direction[0] * 6)
+                                y = int(self.path_center[1] + optimal_direction[1] * 6)
+                                self.path_window_image = cv2.line(self.path_window_image, self.path_center, (x,y), [128,128,256],2)
 
-                                x = int(self.center[0] + optimal_direction[0] * 24)
-                                y = int(self.center[1] + optimal_direction[1] * 24)
+                                x = int(self.center[0] + optimal_direction[0] * 18)
+                                y = int(self.center[1] + optimal_direction[1] * 18)
                                 self.window_image = cv2.line(self.window_image, self.center, (x,y), [128,128,256],2)
 
                                 self.shared_data['move'] = tuple(optimal_direction) if enemies[0][-1] < self.max_distance//2 else (2,2)
-                            elif (not self.shared_data['move'] == (2,2)) and (not self.shared_data['move'] == (3,3)): self.shared_data['move'] = (2,2)
+                            # elif (not self.shared_data['move'] == (2,2)) and (not self.shared_data['move'] == (3,3)): self.shared_data['move'] = (2,2)
                         if draw:
                             for result in results:
                                 self.window_image = result.plot(img = self.window_image)
 
                     if show_result:
-                        cv2.putText(self.window_image, f"FPS: {int(fps) if abs(self.fps_list[-1] - fps) > 1 else int(self.fps_list[-1])}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                        cv2.putText(self.path_window_image, f"FPS: {int(fps) if abs(self.fps_list[-1] - fps) > 1 else int(self.fps_list[-1])}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                        cv2.putText(self.window_image, f"FPS: {int(fps) if abs(self.fps_list[-1] - fps) > 1 else int(self.fps_list[-1])}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+                        cv2.putText(self.window_image, f"Traverse: {self.TRAVERS}", (10, self.height-30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+                        cv2.putText(self.window_image, f"Last Direction: {self.key_map[self.last_direction] if self.last_direction is not None else 'none'}", (10, self.height-30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
                         cv2.imshow(f'{self.window_title} YOLOV8 IMAGE', self.window_image)
-                        cv2.imshow(f'{self.window_title} YOLOV8 PATH', self.path_window_image)
-                        if cv2.waitKey(1) & 0xFF == ord('q'):
+                        
+                        # cv2.putText(self.path_window_image, f"FPS: {int(fps) if abs(self.fps_list[-1] - fps) > 1 else int(self.fps_list[-1])}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                        # cv2.imshow(f'{self.window_title} YOLOV8 PATH', self.path_window_image)
+                        key = cv2.waitKey(1)
+                        if key & 0xFF == ord('q'):
                             break
+                        elif key == -1 and cv2.getWindowProperty('Window', cv2.WND_PROP_VISIBLE) == 0: break
                 if self.bug_counter > 1000: break
 
         print(sum(self.fps_list)/len(self.fps_list), len(self.fps_list))
+        self.release_keys()
         cv2.destroyAllWindows()
 
 class GreedyBFS():
@@ -447,7 +490,7 @@ if '__main__'== __name__:
     conf = {
         'imgsz': 480,
         'show_result' : True,
-        'shoot' : True,
+        'shoot' : False,
         'draw' : True,
         'path' : True,
         'model_detect': True,
