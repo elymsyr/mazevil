@@ -32,7 +32,7 @@ class Mazevil():
         self.max_distance = 100
         self.path_found = []
         self.multip = 2
-
+        self.direction_lenght = 20
         self.bug_counter = 0
 
         manager = multiprocessing.Manager()
@@ -73,10 +73,7 @@ class Mazevil():
             (-1, -1): ('W', 'A'),
             (-1, 0): ('A',),
             (-1, 1): ('S', 'A'),
-            (2,2): '(2,2)',
-            (-2,-2): '(-2,-2)',
-            (-3,-3): '(-3,-3)',
-            (3,3): '(3,3)',
+            (2,2): '(2,2)'
         }
 
     def capture(self, sct):
@@ -222,9 +219,9 @@ class Mazevil():
     def find_directions(self):
         open_directions = []
         for direction in self.directions:
-            x = int(self.path_center[0] + direction[0] * 16)
+            x = int(self.path_center[0] + direction[0] * self.direction_lenght)
             x1 = int(self.path_center[0] + direction[0] * 8)
-            y = int(self.path_center[1] + direction[1] * 16)
+            y = int(self.path_center[1] + direction[1] * self.direction_lenght)
             y1 = int(self.path_center[1] + direction[1] * 8)
             if np.array_equal(self.path_window_image[y, x], [255,255,255])\
                 and np.array_equal(self.path_window_image[y1, x1], [255,255,255]):
@@ -264,7 +261,10 @@ class Mazevil():
                     save_direction = (self.shared_data['move'][0]*-1, self.shared_data['move'][1]*-1)
                     if save_direction != (-2,-2) or save_direction != (-3,-3):
                         self.last_direction = save_direction
-                    self.add_signal(get_direction(self, self.last_direction))
+                    new_direction = get_direction(self, self.last_direction)
+                    self.add_signal(new_direction)
+                    self.add_signal(new_direction)
+                    self.add_signal(new_direction)
 
     def window_linux(self, traverse: bool = False, shoot: bool = False, draw: bool = True, imgsz: int = 480, show_result:bool = True, path: bool = True, model_detect: bool = True, min_conf: float = 0.4):
         with mss.mss() as sct:
@@ -360,12 +360,12 @@ class Mazevil():
                                 self.CLICKED = False
                             elif self.bug_counter > 0: self.bug_counter -= 1
                             for direction in list(self.open_directions):
-                                x = int(self.path_center[0] + direction[0] * 16)
-                                y = int(self.path_center[1] + direction[1] * 16)
+                                x = int(self.path_center[0] + direction[0] * self.direction_lenght)
+                                y = int(self.path_center[1] + direction[1] * self.direction_lenght)
                                 self.path_window_image = cv2.line(self.path_window_image, self.path_center, (x,y), [10,20,138],1)
 
-                                x = int(self.center[0] + direction[0] * 16 * self.multip)
-                                y = int(self.center[1] + direction[1] * 16 * self.multip)
+                                x = int(self.center[0] + direction[0] * self.direction_lenght * self.multip)
+                                y = int(self.center[1] + direction[1] * self.direction_lenght * self.multip)
                                 self.window_image = cv2.line(self.window_image, self.center, (x,y), [100,200,138],1)
                                 
                             if traverse: self.traverse_map()
@@ -388,10 +388,11 @@ class Mazevil():
                     if show_result:
                         signals = ""
                         for signal in self.shared_move_signals:
-                            signals += f"{self.key_map[signal]} "
+                            if signal in self.key_map.keys():
+                                signals += f"{self.key_map[signal]} "
                         cv2.putText(self.window_image, f"FPS: {int(fps) if abs(self.fps_list[-1] - fps) > 1 else int(self.fps_list[-1])}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
                         cv2.putText(self.window_image, f"Traverse: {self.TRAVERSE}", (10, self.height-60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-                        cv2.putText(self.window_image, f"Last Direction: {self.key_map[self.last_direction] if self.last_direction is not None else 'none'}", (10, self.height-40), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                        cv2.putText(self.window_image, f"Last Direction: {self.key_map[self.last_direction] if self.last_direction is not None and self.last_direction in self.key_map.keys() else 'none'}", (10, self.height-40), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                         cv2.putText(self.window_image, f"Move Signals: {signals}", (10, self.height-20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                         cv2.putText(self.window_image, f"{len(self.fps_list)}", (10, self.height-20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 1)
                         cv2.imshow(f'{self.window_title} YOLOV8 IMAGE', self.window_image)
