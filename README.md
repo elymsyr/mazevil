@@ -14,7 +14,7 @@ A free demo version of the **Mazevil** game can be found at [Itch.io](https://sp
 ## Latest Updates
 
 - **Commit ([b6201cc](https://github.com/elymsyr/mazevil/commit/b6201cc156d0f6cae76827dba76698e991feba0b)):** 
-  - Code is rewritten for linux, see [mazevil_linux.py](YOLO%20Model/Project/mazevil_linux.py). Old version [mazevil.py](YOLO%20Model/Project/mazevil.py) will not be updated anymore. But linux version is compitable for Windows for now.
+  - Code is rewritten for linux, see [mazevil_linux.py](YOLO%20Model/Project/mazevil_linux.py). Old version [mazevil.py](YOLO%20Model/Project/mazevil.py) will not be updated anymore. But linux version is compitable with Windows for now.
   - Figthing system is implemented but need to be improved. 
   - Multiprocessing is used for controlling keyboard, works but may need to be improved. 
   - A random walking algorithm is implemented but will be changed later.
