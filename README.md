@@ -13,7 +13,8 @@ A free demo version of the **Mazevil** game can be found at [Itch.io](https://sp
 
 ## Latest Updates
 
-- **Commit (3fa2674):** All the files and folders of yolov7 model is now moved from [YOLO Model](YOLO%20Model) into the folder [yolov7](Test%20Scripts\yolov7). Paths may need to be updated.
+- **Commit ([b6201cc](https://github.com/elymsyr/mazevil/commit/b6201cc156d0f6cae76827dba76698e991feba0b)):** Figthing system is implemented but need to be improved. Multiprocessing is used for controlling keyboard, works but may need to be improved. A random walking algorithm is implemented but will be changed later.
+- **Commit ([3fa2674](https://github.com/elymsyr/mazevil/commit/3fa267426d49b17a5cfd5a55b8241c98ce21e9ea)):** All the files and folders of yolov7 model is now moved from [YOLO Model](YOLO%20Model) into the folder [yolov7](Test%20Scripts\yolov7). Paths may need to be updated.
 
 <!-- - **Release:** v1.2.3 (Released on 2024-08-10)
 - **Commit:** 1a2b3c4d5e6f7g8h9i0j (2024-08-10) -->
@@ -62,9 +63,13 @@ The following sections outline a conceptual plan for the project, detailing the 
 
 The traversal of the game environment is guided by the Greedy Best-First Search Algorithm, chosen for its optimal balance between speed and computational efficiency. As the player navigates through the dungeon rooms, the algorithm dynamically searches for the shortest path to the key, taking into account the layout and obstacles within each room. This algorithm excels at identifying the most promising path by prioritizing moves that seem to bring the player closer to the goal. The ultimate aim is to ensure a seamless and efficient exploration process, where the player is consistently directed toward the next closest dungeon room.
 
+**Update**: Randomly walking is tested. It will be improved or path finding algorithm will be tested later.
+
 ### Mapping
 
 To effectively navigate and visit different dungeon rooms, the system must maintain an updated map of the discovered rooms and pathways. The script [path.py](TF%20Model\Project\path.py) is integral to this mapping process, continuously analyzing the screen to track the player's progress. While inactive traps are marked as safe paths, the script updates the current screen's data, which is stored in an array. As the player moves through the game, both the values and dimensions of another array—initialized at the start of the game—are updated to reflect the changing environment. Although a basic SLAM (Simultaneous Localization and Mapping) algorithm could be implemented to enhance this mapping, the project is currently in the early stages of development, with more advanced features yet to be realized.
+
+**Update**: Still do not know how to do ?
 
 **Examples of Path Detection (An Early Version):**
 
@@ -73,9 +78,13 @@ To effectively navigate and visit different dungeon rooms, the system must maint
   <img src="Docs\path_1.png" alt="path_1" width="400"/>
 </p>
 
+**Update**: Path detection updated. Images will be uploaded soon.
+
 ### Fighting
 
 The combat system is designed to adapt to different enemy types, focusing on dodging ranged attacks while maintaining a safe distance from melee attackers. The player is programmed to keep the mouse cursor trained on the nearest enemy, continuously holding down the left mouse button to attack. This straightforward combat approach does not change a lot when the player enters a boss dungeon room, however, the challenges escalate. Although the current plan provides a solid foundation, there may be still many aspects of the combat system that need to be refined and expanded as the project progresses.
+
+**Update**: Fighting system is implemented. But there is still issues about dodging range attacks.
 
 ## Yolov8
 
