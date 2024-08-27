@@ -51,11 +51,11 @@ We welcome contributions from the community! If you'd like to contribute, please
 
 ### Data Gathering
 
-The data acquisition process systematically captures screenshots from the game environment using two specialized scripts [*ss.py*](TF%20Model\Data\ss.py). The script is meticulously designed to automate the screenshot-capturing process, ensuring the data reflects a diverse range of in-game scenarios. This data is then utilized to train and refine the models, making them adept at recognizing and interpreting various game elements with high accuracy.
+The data acquisition process systematically captures screenshots from the game environment using two specialized scripts [*ss.py*](TF%20Model\Data\ss.py). The script is meticulously designed to automate the screenshot-capturing process, ensuring the data reflects a diverse range of in-game scenarios.
 
 ### Labeling
 
-The labelling of the captured data is a critical step in preparing it for machine learning applications. This process uses the [**LabelImg**](https://github.com/HumanSignal/labelImg) application, a robust tool for annotating images with precise bounding boxes. By accurately labelling each object within the game screenshots, we ensure that the model can effectively learn to differentiate between various elements, such as enemies, obstacles, and key items. The quality of this labelling process directly impacts the performance and reliability of the trained models.
+The labelling of the captured data is a critical step in preparing it for machine learning applications. This process uses the [**LabelImg**](https://github.com/HumanSignal/labelImg) application.
 
 The labels of the models can be found in the *Model* folders in [*TF Model*](TF%20Model) or [*YOLO Model*](YOLO%20Model).
 
@@ -65,15 +65,15 @@ The following sections outline a conceptual plan for the project, detailing the 
 
 ### Traversing
 
-The traversal of the game environment is guided by the Greedy Best-First Search Algorithm, chosen for its optimal balance between speed and computational efficiency. As the player navigates through the dungeon rooms, the algorithm dynamically searches for the shortest path to the key, taking into account the layout and obstacles within each room. This algorithm excels at identifying the most promising path by prioritizing moves that seem to bring the player closer to the goal. The ultimate aim is to ensure a seamless and efficient exploration process, where the player is consistently directed toward the next closest dungeon room.
+The traversal of the game environment will be guided by a search algorithm, chosen for its optimal balance between speed and computational efficiency. As the player navigates through the dungeon rooms, the algorithm dynamically searches for the shortest path to the key, taking into account the layout and obstacles within each room.
 
-**Update**: Randomly walking is tested. It will be improved or path finding algorithm will be tested later.
+**Update**: Randomly walking is tested for traversing through paths to find rooms. It will be improved or path finding algorithm will be tested later.
 
 ### Mapping
 
-To effectively navigate and visit different dungeon rooms, the system must maintain an updated map of the discovered rooms and pathways. The script [path.py](TF%20Model\Project\path.py) is integral to this mapping process, continuously analyzing the screen to track the player's progress. While inactive traps are marked as safe paths, the script updates the current screen's data, which is stored in an array. As the player moves through the game, both the values and dimensions of another array—initialized at the start of the game—are updated to reflect the changing environment. Although a basic SLAM (Simultaneous Localization and Mapping) algorithm could be implemented to enhance this mapping, the project is currently in the early stages of development, with more advanced features yet to be realized.
+To effectively navigate and visit different dungeon rooms, the system must maintain an updated map of the discovered rooms and pathways. The script [path.py](TF%20Model\Project\path.py) is integral to this mapping process. While inactive traps are marked as safe paths, the script updates the current screen's data, which is stored in an array.
 
-**Update**: Still do not know how to do ?
+**Update**: Still thinking how to implement a 2D SLAM algorithm...
 
 **Examples of Path Detection (An Early Version):**
 
@@ -86,7 +86,7 @@ To effectively navigate and visit different dungeon rooms, the system must maint
 
 ### Fighting
 
-The combat system is designed to adapt to different enemy types, focusing on dodging ranged attacks while maintaining a safe distance from melee attackers. The player is programmed to keep the mouse cursor trained on the nearest enemy, continuously holding down the left mouse button to attack. This straightforward combat approach does not change a lot when the player enters a boss dungeon room, however, the challenges escalate. Although the current plan provides a solid foundation, there may be still many aspects of the combat system that need to be refined and expanded as the project progresses.
+The combat system is designed to adapt to different enemy types, focusing on dodging ranged attacks while maintaining a safe distance from melee attackers. The player is programmed to keep the mouse cursor trained on the nearest enemy, continuously holding down the left mouse button to attack.
 
 **Update**: Fighting system is implemented. But there is still issues about dodging range attacks.
 
