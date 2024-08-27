@@ -11,6 +11,7 @@ from collections import deque
 from Xlib import X, display
 import mss
 from random import choice
+from collections import deque
 from pyKey import pressKey, releaseKey
 
 class Mazevil():
@@ -28,7 +29,7 @@ class Mazevil():
         self.root = self.display.screen().root
         self.window, self.monitor = self.find_window()
 
-        self.max_distance = 200
+        self.max_distance = 100
         self.path_found = []
         self.multip = 2
 
@@ -38,14 +39,14 @@ class Mazevil():
         self.shared_data = manager.dict()
         self.shared_data['move'] = (2,2)
         self.shared_data['current_keys'] = set()
+        self.shared_move_signals = manager.list()
 
         self.fps_list = []
-        self.move_signals = []
         
         self.open_directions = None
         self.last_direction = None
         self.current_direction = None
-        self.TRAVERS = False
+        self.TRAVERSE = False
 
         self.directions = np.array([
             [1, 1],   # Down-Right
@@ -72,8 +73,10 @@ class Mazevil():
             (-1, -1): ('W', 'A'),
             (-1, 0): ('A',),
             (-1, 1): ('S', 'A'),
-            (2,2): 'None',
-            (3,3): 'None'
+            (2,2): '(2,2)',
+            (-2,-2): '(-2,-2)',
+            (-3,-3): '(-3,-3)',
+            (3,3): '(3,3)',
         }
 
     def capture(self, sct):
@@ -110,6 +113,9 @@ class Mazevil():
         self.shared_data['move'] = (3,3)        
 
     def update_keys(self):
+        if not len(self.shared_move_signals) == 0 and all(x == self.shared_move_signals[0] for x in self.shared_move_signals):
+            self.shared_data['move'] = self.shared_move_signals[0]
+            
         # Get the target keys based on the input tuple
         if (not self.shared_data['move'] == (2,2)) and (not self.shared_data['move'] == (3,3)):
             target_keys = self.key_map.get(self.shared_data['move'], ())
@@ -226,6 +232,13 @@ class Mazevil():
 
         return np.array(open_directions)
 
+    def add_signal(self, item, max_size = 3):
+        # Append the new item to the end of the list
+        self.shared_move_signals.append(item)
+        # If the size exceeds the maximum size, remove the item from the start
+        if len(self.shared_move_signals) > max_size:
+            self.shared_move_signals.pop(0)
+
     def traverse_map(self):
         def intersection(array1, array2):
             intersection = np.intersect1d(array1.view([('', array1.dtype)] * array1.shape[1]), 
@@ -238,16 +251,20 @@ class Mazevil():
             d_choice = choice(new_direction if new_direction.size>0 else self.random_walk_directions)
             return tuple(d_choice)
         
-        if self.TRAVERS == True and self.open_directions.size > 0:
+        
+        if self.TRAVERSE == True and self.open_directions.size > 0:
             if self.last_direction is None:
                 self.last_direction = get_direction(self)
-                self.shared_data['move'] = self.last_direction
+                self.add_signal(self.last_direction)
+                self.add_signal(self.last_direction)
+                self.add_signal(self.last_direction)
+                print(self.shared_move_signals)
             else:
                 if not np.any(np.all(self.open_directions == self.shared_data['move'], axis=1)):
                     save_direction = (self.shared_data['move'][0]*-1, self.shared_data['move'][1]*-1)
                     if save_direction != (-2,-2) or save_direction != (-3,-3):
                         self.last_direction = save_direction
-                    self.shared_data['move'] = get_direction(self, self.last_direction)
+                    self.add_signal(get_direction(self, self.last_direction))
 
     def window_linux(self, traverse: bool = False, shoot: bool = False, draw: bool = True, imgsz: int = 480, show_result:bool = True, path: bool = True, model_detect: bool = True, min_conf: float = 0.4):
         with mss.mss() as sct:
@@ -326,11 +343,11 @@ class Mazevil():
                             self.window_image = cv2.circle(self.window_image, self.center, self.max_distance, (10,20,128), 1)
                             self.path_window_image = cv2.circle(self.path_window_image, self.path_center, int(self.max_distance//self.multip), (10,20,128), 1)
 
-                            if enemies and self.TRAVERS:
-                                self.TRAVERS = False
+                            if enemies and self.TRAVERSE:
+                                self.TRAVERSE = False
                                 self.release_keys()
-                            if not enemies and not self.TRAVERS:
-                                self.TRAVERS = True
+                            if not enemies and not self.TRAVERSE:
+                                self.TRAVERSE = True
                                 screen_x = 365+self.monitor["left"]+63
                                 screen_y = 370+self.monitor["top"]+33
                                 self.click(screen_x, screen_y)
@@ -362,16 +379,21 @@ class Mazevil():
                                 y = int(self.center[1] + optimal_direction[1] * 18)
                                 self.window_image = cv2.line(self.window_image, self.center, (x,y), [128,128,256],2)
 
-                                self.shared_data['move'] = tuple(optimal_direction) if enemies[0][-1] < self.max_distance//1.3 else (2,2)
+                                self.add_signal(tuple(optimal_direction) if enemies[0][-1] < self.max_distance//1.3 else (2,2))
                             # elif (not self.shared_data['move'] == (2,2)) and (not self.shared_data['move'] == (3,3)): self.shared_data['move'] = (2,2)
                         if draw:
                             for result in results:
                                 self.window_image = result.plot(img = self.window_image)
 
                     if show_result:
+                        signals = ""
+                        for signal in self.shared_move_signals:
+                            signals += f"{self.key_map[signal]} "
                         cv2.putText(self.window_image, f"FPS: {int(fps) if abs(self.fps_list[-1] - fps) > 1 else int(self.fps_list[-1])}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
-                        cv2.putText(self.window_image, f"Traverse: {self.TRAVERS}", (10, self.height-20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                        cv2.putText(self.window_image, f"Traverse: {self.TRAVERSE}", (10, self.height-60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                         cv2.putText(self.window_image, f"Last Direction: {self.key_map[self.last_direction] if self.last_direction is not None else 'none'}", (10, self.height-40), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                        cv2.putText(self.window_image, f"Move Signals: {signals}", (10, self.height-20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                        cv2.putText(self.window_image, f"{len(self.fps_list)}", (10, self.height-20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 1)
                         cv2.imshow(f'{self.window_title} YOLOV8 IMAGE', self.window_image)
                         
                         # cv2.putText(self.path_window_image, f"FPS: {int(fps) if abs(self.fps_list[-1] - fps) > 1 else int(self.fps_list[-1])}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
@@ -379,7 +401,7 @@ class Mazevil():
                         if cv2.waitKey(1) & 0xFF == ord('q'):
                             break
                 if self.bug_counter > 1000: break
-                if len(self.fps_list) > 1000: break
+                if len(self.fps_list) > 10000: break
 
         print(sum(self.fps_list)/len(self.fps_list), len(self.fps_list))
         self.release_keys()
@@ -495,7 +517,7 @@ if '__main__'== __name__:
     conf = {
         'imgsz': 480,
         'show_result' : True,
-        'shoot' : False,
+        'shoot' : True,
         'draw' : True,
         'traverse': True,
         'path' : True,
