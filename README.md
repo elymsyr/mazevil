@@ -9,8 +9,6 @@ Welcome to the MazeVil AI project! This repository is dedicated to developing an
 
 A free demo version of the **Mazevil** game can be found at [Itch.io](https://splix.itch.io/mazevil).
 
-*Paths in [Test Scripts](Test%20Scripts) may need to be updated.*
-
 ## Latest Updates
 
 - **Commit ([b6201cc](https://github.com/elymsyr/mazevil/commit/b6201cc156d0f6cae76827dba76698e991feba0b)):** 
