@@ -528,8 +528,8 @@ if '__main__'== __name__:
     agent = Mazevil(model_path=model_path)
     process = None
     
-    process = agent.start_movement()
+    # process = agent.start_movement()
     
     agent.window_linux(**conf)
     
-    if process: agent.stop_movement(process)
+    # if process: agent.stop_movement(process)
